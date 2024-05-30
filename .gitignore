@@ -1,5 +1,2 @@
-# Ignore the environment folder at the top level
 /env/
-
-# Ignore the logs folder in the code subfolder
-/code/logs/
+/logs/
