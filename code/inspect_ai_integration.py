@@ -34,7 +34,6 @@ class FactComparator:
     async def process_data(self, context, answer):
         context_list = (await self.model._agenerate([HumanMessage(content=self._parse_prompt().format(text=context))])).generations[0].text
         answer_list = (await self.model._agenerate([HumanMessage(content=self._parse_prompt().format(text=answer))])).generations[0].text
-        print(type(self.model))
         comparison_result = self.parser.parse((await self.model._agenerate([HumanMessage(content=self._compare_prompt().format(context_list=context_list, answer_list=answer_list))])).generations[0].text)
 
         return {
@@ -229,7 +228,6 @@ def fact_comparator_scorer(model) -> Scorer:
 
     # Call the scorer
     score = await fact_comparator_scorer(state, target)
-    print(score)
 
     # Ignore the actual processing and return a dummy value
     grounded_score = score.value['groundedness']
@@ -380,7 +378,6 @@ def classification_eval():
         )
     ]
     SYSTEM_MESSAGE = "Please answer the question being asked."
-    print("here")
     return Task(
         dataset=samples,
         plan=[
@@ -389,3 +386,48 @@ def classification_eval():
         ],
         scorer=prompt_scorer(model=get_model()),
     )
+
+
+def create_test_cases():
+    test_cases = [
+        {
+            'input_text': 'The Earth is 3 billion years old.',
+            'target_text': 'Return PASS if the answer contains that the sun is 4.6 billion years old, return FAIL otherwise.',
+            'expected_score': 0
+        },
+        {
+            'input_text': 'The Sun is approximately 4.6 billion years old and is a mid-sized star.',
+            'target_text': 'Return PASS if the answer contains that the sun is 4.6 billion years old, return FAIL otherwise.',
+            'expected_score': 1
+        },
+        # Add more test cases here
+    ]
+    return test_cases
+
+def run_test_cases(test_cases):
+    data = []
+    prompt_scorer = PromptScorer(InspectChatModel())
+
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
+    try:
+        for case in test_cases:
+            input_text = case['input_text']
+            target_text = case['target_text']
+            expected_score = case['expected_score']
+
+            actual_score = loop.run_until_complete(prompt_scorer(input_text, target_text))
+
+            data.append({
+                'Input Text': input_text,
+                'Target Text': target_text,
+                'Expected Score': expected_score,
+                'Actual Score': actual_score
+            })
+    finally:
+        loop.close()
+
+    df = pd.DataFrame(data)
+    return df
+
