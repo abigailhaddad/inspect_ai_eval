@@ -19,6 +19,8 @@ from ast import literal_eval
 from langchain_core.messages import HumanMessage
 from code_from_inspect_ai import InspectChatModel
 from inspect_ai.dataset import Sample
+import os
+os.environ['PYTHONIOENCODING'] = 'utf-8'
 
 
 class FactComparator:
@@ -32,7 +34,7 @@ class FactComparator:
     async def process_data(self, context, answer):
         context_list = (await self.model._agenerate([HumanMessage(content=self._parse_prompt().format(text=context))])).generations[0].text
         answer_list = (await self.model._agenerate([HumanMessage(content=self._parse_prompt().format(text=answer))])).generations[0].text
-
+        print(type(self.model))
         comparison_result = self.parser.parse((await self.model._agenerate([HumanMessage(content=self._compare_prompt().format(context_list=context_list, answer_list=answer_list))])).generations[0].text)
 
         return {
@@ -309,3 +311,81 @@ def compare_metrics(cases: Dict[str, Dict[str, Tuple[str, str, Dict[str, float],
 
     df = pd.DataFrame(data)
     return df
+
+
+
+from langchain.prompts import PromptTemplate
+from code_from_inspect_ai import InspectChatModel
+
+class PromptScorer:
+    def __init__(self, model):
+        self.model = model
+
+    @staticmethod
+    def _parse_prompt():
+        return PromptTemplate(
+            input_variables=["target_text", "input_text"],
+            template="{target_text}\n\nInput: {input_text}\nOutput:"
+        )
+
+    async def __call__(self, input_text, target_text):
+        prompt = self._parse_prompt().format(target_text=target_text, input_text=input_text)
+        final_result = (await self.model._agenerate([HumanMessage(content=prompt)])).generations[0].text.strip()
+        return self.process_data(final_result)
+
+    def process_data(self, final_result):
+        pass_value = 1 if "PASS" in final_result else 0
+        return pass_value
+
+class PromptScorerWrapper(Scorer):
+    def __init__(self, model):
+        self.model = InspectChatModel()
+        self.prompt_scorer = PromptScorer(self.model)
+
+    async def __call__(self, state: TaskState, target: Sample):
+        input_text = state.output.choices[0].message.content
+        target_text = target.target
+
+        pass_value = await self.prompt_scorer(input_text, target_text)
+
+        return Score(
+            value=pass_value,
+            answer=state.output.completion,
+            metadata={"pass": pass_value}
+        )
+
+@metric
+def pass_metric():
+    def metric(scores: list[Score]) -> float:
+        total_pass = 0
+        for score in scores:
+            metadata = score.metadata
+            if metadata is not None:
+                total_pass += float(metadata["pass"])
+        return total_pass / float(len(scores))
+    return metric
+
+@scorer(metrics=[pass_metric()])
+def prompt_scorer(model) -> Scorer:
+    return PromptScorerWrapper(model)
+
+@task
+def classification_eval():
+    samples = [
+        Sample(
+            input="How old is the sun?",
+            target="Return PASS if the answer contains that the sun is 4.6 billion years old, return FAIL otherwise.",
+            description="Very basic question.",
+            id="case1"
+        )
+    ]
+    SYSTEM_MESSAGE = "Please answer the question being asked."
+    print("here")
+    return Task(
+        dataset=samples,
+        plan=[
+            system_message(SYSTEM_MESSAGE),
+            generate()
+        ],
+        scorer=prompt_scorer(model=get_model()),
+    )

@@ -134,7 +134,8 @@ cases = {
 
 if __name__ == "__main__":
     import asyncio
-    asyncio.run(smallest_test())
-    df = inspect_ai_integration.compare_metrics(cases)
-    print(df)
+    #asyncio.run(smallest_test())
+    #df = inspect_ai_integration.compare_metrics(cases)
+    #print(df)
     eval(inspect_ai_integration.my_eval(), model="openai/gpt-3.5-turbo")
+    eval(inspect_ai_integration.classification_eval, model="openai/gpt-3.5-turbo")
