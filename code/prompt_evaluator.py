@@ -6,7 +6,7 @@ from inspect_ai.model import get_model
 from inspect_ai.solver import TaskState, generate, system_message
 from inspect_ai.scorer import Score, Scorer, Target, metric, scorer
 from langchain.prompts import PromptTemplate
-from langchain.llms import OpenAI
+from langchain_community.llms import OpenAI
 from langchain.chains import LLMChain
 from langchain.output_parsers import PydanticOutputParser
 from langchain_core.pydantic_v1 import BaseModel, Field
