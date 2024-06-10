@@ -1,5 +1,6 @@
 from langchain.prompts import PromptTemplate
-from code_from_inspect_ai import InspectChatModel
+from new_scorers.code_from_inspect_ai import InspectChatModel
+
 
 from inspect_ai import eval, Task, task
 from inspect_ai.model import get_model
@@ -16,7 +17,6 @@ from inspect_ai.dataset import Sample
 from typing import Dict, Tuple
 from ast import literal_eval
 from langchain_core.messages import HumanMessage
-from code_from_inspect_ai import InspectChatModel
 from inspect_ai.dataset import Sample
 import os
 

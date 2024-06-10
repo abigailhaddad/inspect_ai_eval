@@ -1,6 +1,6 @@
 import sys
 
-from code_from_inspect_ai import InspectChatModel
+from new_scorers.code_from_inspect_ai import InspectChatModel
 import random
 from inspect_ai.dataset import Sample
 from inspect_ai import eval, Task, task
@@ -19,7 +19,6 @@ import asyncio
 from typing import Dict, Tuple
 from ast import literal_eval
 from langchain_core.messages import HumanMessage
-from code_from_inspect_ai import InspectChatModel
 import os
 
 

@@ -4,11 +4,11 @@
   "eval": {
     "task": "classification_eval",
     "task_version": 0,
-    "task_id": "3xBirzgzTkzAYa769bqevR",
-    "run_id": "V824mJFBdLbJ9U9LmE9y9f",
-    "created": "2024-05-31T14:24:59",
+    "task_id": "JSQU3LvjjhSkCmJEZuDMv8",
+    "run_id": "BdFEYrgd3PQnrsHSaFGS2D",
+    "created": "2024-06-10T09:58:33",
     "dataset": {},
-    "model": "openai/gpt-3.5-turbo",
+    "model": "openai/gpt-4",
     "task_attribs": {},
     "task_args": {},
     "model_args": {},
@@ -16,10 +16,10 @@
     "revision": {
       "type": "git",
       "origin": "https://github.com/abigailhaddad/inspect_ai_eval",
-      "commit": "44033e4"
+      "commit": "1b73b63"
     },
     "packages": {
-      "inspect_ai": "0.3.9.dev2+gaec9b20"
+      "inspect_ai": "0.3.9"
     }
   },
   "plan": {
@@ -42,7 +42,7 @@
     "scorer": {
       "name": "prompt_scorer",
       "params": {
-        "model": "openai/gpt-3.5-turbo"
+        "model": "openai/gpt-4"
       }
     },
     "metrics": {
@@ -54,13 +54,13 @@
     }
   },
   "stats": {
-    "started_at": "2024-05-31T14:24:59",
-    "completed_at": "2024-05-31T14:25:00",
+    "started_at": "2024-06-10T09:58:33",
+    "completed_at": "2024-06-10T09:58:36",
     "model_usage": {
-      "openai/gpt-3.5-turbo": {
-        "input_tokens": 74,
-        "output_tokens": 16,
-        "total_tokens": 90
+      "openai/gpt-4": {
+        "input_tokens": 71,
+        "output_tokens": 13,
+        "total_tokens": 84
       }
     }
   },
@@ -81,17 +81,17 @@
           "role": "user"
         },
         {
-          "content": "The sun is estimated to be about 4.6 billion years old.",
+          "content": "The sun is about 4.6 billion years old.",
           "source": "generate",
           "role": "assistant"
         }
       ],
       "output": {
-        "model": "gpt-3.5-turbo-0125",
+        "model": "gpt-4-0613",
         "choices": [
           {
             "message": {
-              "content": "The sun is estimated to be about 4.6 billion years old.",
+              "content": "The sun is about 4.6 billion years old.",
               "source": "generate",
               "role": "assistant"
             },
@@ -100,13 +100,13 @@
         ],
         "usage": {
           "input_tokens": 24,
-          "output_tokens": 15,
-          "total_tokens": 39
+          "output_tokens": 12,
+          "total_tokens": 36
         }
       },
       "score": {
         "value": 1,
-        "answer": "The sun is estimated to be about 4.6 billion years old.",
+        "answer": "The sun is about 4.6 billion years old.",
         "metadata": {
           "pass": 1
         }

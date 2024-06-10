@@ -1,8 +1,8 @@
 # test_fact_comparator.py
 import unittest
 import asyncio
-from fact_comparator import FactComparator, ModelComparator
-from code_from_inspect_ai import InspectChatModel
+from new_scorers.fact_comparator import FactComparator, ModelComparator
+from new_scorers.code_from_inspect_ai import InspectChatModel
 import os
 
 os.environ['INSPECT_EVAL_MODEL'] = 'openai/gpt-4'

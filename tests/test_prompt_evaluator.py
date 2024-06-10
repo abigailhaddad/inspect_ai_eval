@@ -1,7 +1,7 @@
 import unittest
 import asyncio
-from prompt_evaluator import PromptEvaluator
-from code_from_inspect_ai import InspectChatModel
+from new_scorers.prompt_evaluator import PromptEvaluator
+from new_scorers.code_from_inspect_ai import InspectChatModel
 import os
 import contextlib
 
