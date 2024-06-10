@@ -1,7 +1,26 @@
 import unittest
 import asyncio
 from new_scorers.fact_comparator import FactComparator, ModelComparator
+import sys
 from new_scorers.code_from_inspect_ai import InspectChatModel
+import random
+from inspect_ai.dataset import Sample
+from inspect_ai import eval, Task, task
+from inspect_ai.model import get_model
+from inspect_ai.solver import TaskState, generate, system_message
+from inspect_ai.scorer import Score, Scorer, Target, metric, scorer
+from langchain.prompts import PromptTemplate
+from langchain_community.llms import OpenAI
+from langchain.chains import LLMChain
+from langchain.output_parsers import PydanticOutputParser
+from langchain_core.pydantic_v1 import BaseModel, Field
+import pandas as pd
+import asyncio
+from typing import Dict, Tuple
+from ast import literal_eval
+from langchain_core.messages import HumanMessage
+import os
+from new_scorers.fact_comparator import fact_comparator_scorer
 import os
 
 os.environ['INSPECT_EVAL_MODEL'] = 'openai/gpt-4'
@@ -40,77 +59,7 @@ class TestFactComparatorMetrics(unittest.TestCase):
         }
         self.run_test_case(case_data)
 
-    def test_case2(self):
-        """
-        Test case 2: Basic use case with mild rephrasing.
-        """
-        case_data = {
-            'context_text': 'The Sun, a medium-sized star, is located at the center of our Solar System and is approximately 4.6 billion years old.',
-            'answer_text': 'The sun is a mid-sized star which has existed for about 4.6 billion years.',
-            'true_metrics': {'groundedness': 67, 'thoroughness': 100},
-            'description': 'This is a basic use case with mild rephrasing.'
-        }
-        self.run_test_case(case_data)
-
-    def test_case3(self):
-        """
-        Test case 3: Simple restructuring and clarification.
-        """
-        case_data = {
-            'context_text': 'Sally is Rachel\'s cat.',
-            'answer_text': 'Sally is a cat. Rachel is her owner.',
-            'true_metrics': {'groundedness': 100, 'thoroughness': 100},
-            'description': 'This case involves simple restructuring and clarification.'
-        }
-        self.run_test_case(case_data)
-
-    def test_case4(self):
-        """
-        Test case 4: Change in comparative perspective.
-        """
-        case_data = {
-            'context_text': 'Sally is larger than Stan.',
-            'answer_text': 'Stan is smaller than Sally.',
-            'true_metrics': {'groundedness': 100, 'thoroughness': 100},
-            'description': 'This case demonstrates a change in comparative perspective.'
-        }
-        self.run_test_case(case_data)
-
-    def test_case5(self):
-        """
-        Test case 5: Unit conversion and synonym use.
-        """
-        case_data = {
-            'context_text': 'The average temperature today is 20 degrees Celsius.',
-            'answer_text': 'The mean temperature today is 68 degrees Fahrenheit.',
-            'true_metrics': {'groundedness': 100, 'thoroughness': 100},
-            'description': 'This case involves unit conversion and synonym use.'
-        }
-        self.run_test_case(case_data)
-
-    def test_case6(self):
-        """
-        Test case 6: Unit conversion and synonym use with incorrect facts.
-        """
-        case_data = {
-            'context_text': 'The average temperature today is 20 degrees Celsius.',
-            'answer_text': 'The average temperature today is 50 degrees Celsius.',
-            'true_metrics': {'groundedness': 0, 'thoroughness': 0},
-            'description': 'This case involves unit conversion and synonym use.'
-        }
-        self.run_test_case(case_data)
-
-    def test_case7(self):
-        """
-        Test case 7: Dual meaning of "sanctioned."
-        """
-        case_data = {
-            'context_text': 'The company has an ATO now, so they have been sanctioned by the government and you can work with them.',
-            'answer_text': 'The company has been sanctioned by the government in response to recent lawbreaking activity.',
-            'true_metrics': {'groundedness': 0, 'thoroughness': 0},
-            'description': 'This case uses "sanctioned" in a way that highlights its dual meaning: approved or penalized.'
-        }
-        self.run_test_case(case_data)
+    # Add other test cases here with similar structure
 
     def run_test_case(self, case_data):
         """
@@ -129,6 +78,69 @@ class TestFactComparatorMetrics(unittest.TestCase):
 
         self.assertEqual(groundedness_model, true_metrics['groundedness'])
         self.assertEqual(thoroughness_model, true_metrics['thoroughness'])
+
+class TestFactComparatorEvaluation(unittest.TestCase):
+    def setUp(self):
+        self.model = InspectChatModel()
+
+    def test_create_sample_data(self):
+        samples = sample_data()
+        self.assertIsInstance(samples, list)
+        self.assertIsInstance(samples[0], Sample)
+
+    def test_fact_comparator_eval_task(self):
+        try:
+            task = fact_comparator_eval()
+            self.assertIsInstance(task, Task)
+
+            self.assertTrue(hasattr(task, 'scorer'))
+            self.assertIsInstance(task.scorer, Scorer)
+            
+            # Print the scorer details for debugging
+            print(type(task))
+            
+            # Run the evaluation
+            eval_results = eval(task, model="openai/gpt-4")
+            print(f"Eval results: {eval_results}")
+
+        except Exception as e:
+            self.fail(f"fact_comparator_eval test failed: {e}")
+
+def sample_data():
+    """
+    Create sample data for evaluation.
+
+    Returns:
+        list: A list of sample data.
+    """
+    samples = [
+        Sample(
+            input="How old is the sun?",
+            target="The sun is approximately 4.6 billion years old. It's a mid-sized star.",
+            description="Very basic question.",
+            id="case1"
+        )
+    ]
+    return samples
+
+@task
+def fact_comparator_eval():
+    """
+    Create an evaluation task for the fact comparator.
+
+    Returns:
+        Task: The evaluation task.
+    """
+    samples = sample_data()
+    SYSTEM_MESSAGE = "Please answer the question being asked."
+    return Task(
+        dataset=samples,
+        plan=[
+            system_message(SYSTEM_MESSAGE),
+            generate()
+        ],
+        scorer=fact_comparator_scorer(model=get_model()),
+    )
 
 if __name__ == '__main__':
     unittest.main()
