@@ -5,6 +5,7 @@ import os
 from inspect_ai import eval, Task, task
 import prompt_evaluator
 import fact_comparator
+import asyncio
 
 # Set environment variables
 os.environ['INSPECT_EVAL_MODEL'] = 'openai/gpt-4'
@@ -134,10 +135,5 @@ cases = {
 
 
 if __name__ == "__main__":
-    import asyncio
-    #asyncio.run(smallest_test())
-    #df = inspect_ai_integration.compare_metrics(cases)
-    #print(df)
-    #eval(inspect_ai_integration.my_eval(), model="openai/gpt-3.5-turbo")
-    eval(prompt_evaluator.classification_eval, model="openai/gpt-4")
-    eval(fact_comparator.my_eval(), model="openai/gpt-4")
+    eval(prompt_evaluator.prompt_evaluator_eval, model="openai/gpt-4")
+    eval(fact_comparator.fact_comparator_eval(), model="openai/gpt-4")

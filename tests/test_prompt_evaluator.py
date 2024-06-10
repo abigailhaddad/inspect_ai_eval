@@ -9,17 +9,30 @@ os.environ['INSPECT_EVAL_MODEL'] = 'openai/gpt-4'
 os.environ['INSPECT_MODEL_NAME'] = 'openai/gpt-4'
 
 class TestPromptEvaluator(unittest.TestCase):
+    """
+    A class to test the PromptEvaluator.
+    """
+
     def setUp(self):
+        """
+        Set up the test environment by initializing the PromptEvaluator and the event loop.
+        """
         self.evaluator = PromptEvaluator(InspectChatModel())
         self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.loop)
 
     def tearDown(self):
+        """
+        Tear down the test environment by closing the event loop and any pending tasks.
+        """
         self.loop.run_until_complete(self.close_async_tasks())
         self.loop.run_until_complete(self.loop.shutdown_asyncgens())
         self.loop.close()
 
     async def close_async_tasks(self):
+        """
+        Close all pending asynchronous tasks.
+        """
         tasks = [task for task in asyncio.all_tasks() if task is not asyncio.current_task()]
         for task in tasks:
             task.cancel()
@@ -27,6 +40,9 @@ class TestPromptEvaluator(unittest.TestCase):
                 await task
 
     def test_evaluate(self):
+        """
+        Test the evaluation of different input and target texts.
+        """
         test_cases = [
             {
                 'input_text': 'The Earth is 3 billion years old.',

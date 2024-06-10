@@ -1,5 +1,4 @@
 import sys
-
 from new_scorers.code_from_inspect_ai import InspectChatModel
 import random
 from inspect_ai.dataset import Sample
@@ -14,25 +13,52 @@ from langchain.output_parsers import PydanticOutputParser
 from langchain_core.pydantic_v1 import BaseModel, Field
 import pandas as pd
 import asyncio
-
-
 from typing import Dict, Tuple
 from ast import literal_eval
 from langchain_core.messages import HumanMessage
 import os
 
-
 class FactComparator:
+    """
+    A class to compare facts between context and answer using an AI model.
+    """
+
     def __init__(self, model):
+        """
+        Initialize the FactComparator with the provided model.
+        
+        Args:
+            model: The AI model used for generating and comparing facts.
+        """
         self.model = model
         self.parser = PydanticOutputParser(pydantic_object=ComparisonResult)
 
-    async def __call__(self, context, answer):
-        return await self.process_data(context, answer)
+    async def __call__(self, context_text, answer_text):
+        """
+        Process the context and answer asynchronously and return the comparison results.
 
-    async def process_data(self, context, answer):
-        context_list = (await self.model._agenerate([HumanMessage(content=self._parse_prompt().format(text=context))])).generations[0].text
-        answer_list = (await self.model._agenerate([HumanMessage(content=self._parse_prompt().format(text=answer))])).generations[0].text
+        Args:
+            context_text (str): The context text.
+            answer_text (str): The answer text.
+
+        Returns:
+            dict: The comparison results.
+        """
+        return await self.process_data(context_text, answer_text)
+
+    async def process_data(self, context_text, answer_text):
+        """
+        Process the context and answer, parsing them into facts and comparing.
+
+        Args:
+            context_text (str): The context text.
+            answer_text (str): The answer text.
+
+        Returns:
+            dict: The processed data and comparison results.
+        """
+        context_list = (await self.model._agenerate([HumanMessage(content=self._parse_prompt().format(text=context_text))])).generations[0].text
+        answer_list = (await self.model._agenerate([HumanMessage(content=self._parse_prompt().format(text=answer_text))])).generations[0].text
         comparison_result = self.parser.parse((await self.model._agenerate([HumanMessage(content=self._compare_prompt().format(context_list=context_list, answer_list=answer_list))])).generations[0].text)
 
         return {
@@ -42,6 +68,15 @@ class FactComparator:
         }
 
     def calculate_metrics(self, comparison_result):
+        """
+        Calculate groundedness and thoroughness metrics based on the comparison results.
+
+        Args:
+            comparison_result (ComparisonResult): The result of the fact comparison.
+
+        Returns:
+            dict: The calculated metrics.
+        """
         facts_in_both_count = len(comparison_result.facts_in_both)
         facts_only_in_answer_count = len(comparison_result.facts_only_in_answer)
         facts_only_in_context_count = len(comparison_result.facts_only_in_context)
@@ -56,8 +91,15 @@ class FactComparator:
             "groundedness": groundedness,
             "thoroughness": thoroughness,
         }
+
     @staticmethod
     def _parse_prompt():
+        """
+        Generate the prompt template for parsing facts from text.
+
+        Returns:
+            PromptTemplate: The prompt template.
+        """
         return PromptTemplate(
             input_variables=["text"],
             template="""
@@ -71,12 +113,18 @@ class FactComparator:
 
             If any of the facts contain pronouns and the pronoun reference is clear, replace the pronoun with the noun it refers to. If the pronoun reference is ambiguous, leave the pronoun as is.
 
-        Return the final list of parsed and pronoun-replaced facts inside <facts> tags, with each fact on its own line. Do not include any additional commentary or explanation, including about pronoun changes, number of facts, or truth value of the facts.
+            Return the final list of parsed and pronoun-replaced facts inside <facts> tags, with each fact on its own line. Do not include any additional commentary or explanation, including about pronoun changes, number of facts, or truth value of the facts.
         """,
         )
 
     @staticmethod
     def _compare_prompt():
+        """
+        Generate the prompt template for comparing facts between context and answer.
+
+        Returns:
+            PromptTemplate: The prompt template.
+        """
         return PromptTemplate(
             input_variables=["context_list", "answer_list"],
             template="""
@@ -127,18 +175,42 @@ class FactComparator:
 
 
 class ComparisonResult(BaseModel):
+    """
+    A Pydantic model for representing the comparison result.
+    """
     facts_in_both: list[str] = Field(default_factory=list, description="List of facts present in both context and answer")
     facts_only_in_answer: list[str] = Field(default_factory=list, description="List of facts only present in the answer")
     facts_only_in_context: list[str] = Field(default_factory=list, description="List of facts only present in the context")
 
+
 class ModelComparator:
+    """
+    A class to compare models based on their generated facts.
+    """
+
     def __init__(self, model):
+        """
+        Initialize the ModelComparator with the provided model.
+        
+        Args:
+            model: The AI model used for generating and comparing facts.
+        """
         self.inspect_model = InspectChatModel()
         self.comparator = FactComparator(self.inspect_model)
 
-    async def run_and_compare(self, target_statement, input_statement):
+    async def run_and_compare(self, context_text, answer_text):
+        """
+        Run the model comparison and calculate the metrics.
+
+        Args:
+            context_text (str): The context text for comparison.
+            answer_text (str): The answer text for comparison.
+
+        Returns:
+            dict: The comparison results and metrics.
+        """
         try:
-            result = await self.comparator(target_statement, input_statement)
+            result = await self.comparator(context_text, answer_text)
             metrics = self.comparator.calculate_metrics(result["comparison_result"])
             groundedness_model = metrics['groundedness']
             thoroughness_model = metrics['thoroughness']
@@ -167,18 +239,38 @@ class ModelComparator:
 
 
 class FactComparatorScorer:
+    """
+    A class to score facts based on their groundedness and thoroughness.
+    """
+
     def __init__(self, model):
+        """
+        Initialize the FactComparatorScorer with the provided model.
+        
+        Args:
+            model: The AI model used for generating and comparing facts.
+        """
         self.model = model
         self.fact_comparator = FactComparator(model)
 
     async def __call__(self, state: TaskState, target: Sample):
-        try: 
-            context = state.output.choices[0].message.content
-        except: 
-            context = state.input
-        target_text = target.target
+        """
+        Process the state and target to calculate the score.
 
-        result = await self.fact_comparator.process_data(context, target_text)
+        Args:
+            state (TaskState): The current task state.
+            target (Sample): The target sample.
+
+        Returns:
+            Score: The calculated score.
+        """
+        try:
+            context_text = state.output.choices[0].message.content
+        except:
+            context_text = state.input
+        answer_text = target.target
+
+        result = await self.fact_comparator.process_data(context_text, answer_text)
         metrics = self.fact_comparator.calculate_metrics(result["comparison_result"])
 
         scorer_value = {
@@ -186,80 +278,113 @@ class FactComparatorScorer:
             "thoroughness": metrics["thoroughness"],
         }
 
-        explanation = str(result) + f"\nModel Output: {context}"
+        explanation = str(result) + f"\nModel Output: {context_text}"
 
         return Score(
             value=scorer_value,
             explanation=explanation,
         )
-        
+
+
 @metric
 def thoroughness():
-  def metric(scores: list[Score]) -> float:
-    total = 0.0
-    for item in scores:
-      metadata = item.metadata
-      if metadata is not None:
-          total += float(metadata["thoroughness"])
-    return total / float(len(scores))
-  return metric
+    """
+    Metric function to calculate the thoroughness score.
+
+    Returns:
+        function: The metric function.
+    """
+    def metric(scores: list[Score]) -> float:
+        total = 0.0
+        for item in scores:
+            metadata = item.metadata
+            if metadata is not None:
+                total += float(metadata["thoroughness"])
+        return total / float(len(scores))
+    return metric
+
 
 @metric
 def groundedness():
-  def metric(scores: list[Score]) -> float:
-    total = 0.0
-    for item in scores:
-        metadata = item.metadata
-        if metadata is not None:
-            total += float(metadata["groundedness"])
-    return total / float(len(scores))
-  return metric
+    """
+    Metric function to calculate the groundedness score.
 
-    
+    Returns:
+        function: The metric function.
+    """
+    def metric(scores: list[Score]) -> float:
+        total = 0.0
+        for item in scores:
+            metadata = item.metadata
+            if metadata is not None:
+                total += float(metadata["groundedness"])
+        return total / float(len(scores))
+    return metric
+
+
 @scorer(metrics=[groundedness(), thoroughness()])
 def fact_comparator_scorer(model) -> Scorer:
-  
-  async def score(state: TaskState, target: Target) -> Score:
+    """
+    Create a scorer for the fact comparator.
 
-    # Create an instance of the scorer
-    model = InspectChatModel()
-    fact_comparator_scorer = FactComparatorScorer(model)
+    Args:
+        model: The AI model used for generating and comparing facts.
 
-    # Call the scorer
-    score = await fact_comparator_scorer(state, target)
+    Returns:
+        Scorer: The fact comparator scorer.
+    """
+    async def score(state: TaskState, target: Target) -> Score:
+        model = InspectChatModel()
+        fact_comparator_scorer = FactComparatorScorer(model)
 
-    # Ignore the actual processing and return a dummy value
-    grounded_score = score.value['groundedness']
-    thorough_score = score.value['thoroughness']
-    explanation = score.explanation
+        score = await fact_comparator_scorer(state, target)
 
-    answer = state.output.completion
+        grounded_score = score.value['groundedness']
+        thorough_score = score.value['thoroughness']
+        explanation = score.explanation
 
-    return Score(
-        value=f"G:{grounded_score} : T:{thorough_score}", # make a better string?
-        answer=answer,
-        explanation= "nothing",
-        metadata = {
-           "thoroughness": thorough_score,
-           "groundedness": grounded_score,
-            "stuff": explanation
-        }
-    )
+        answer = state.output.completion
 
-  return score
+        return Score(
+            value=f"G:{grounded_score} : T:{thorough_score}",
+            answer=answer,
+            explanation="nothing",
+            metadata={
+                "thoroughness": thorough_score,
+                "groundedness": grounded_score,
+                "stuff": explanation
+            }
+        )
+
+    return score
+
 
 def sample_sample():
+    """
+    Create sample data for evaluation.
+
+    Returns:
+        list: A list of sample data.
+    """
     samples = [
-    Sample(
-        input="How old is the sun?",
-        target="The sun is approximately 4.6 billion years old. It's a mid-sized star.",
-        description="Very basic question.",
-        id="case1"
-    )]
-    return(samples)
+        Sample(
+            input="How old is the sun?",
+            target="The sun is approximately 4.6 billion years old. It's a mid-sized star.",
+            description="Very basic question.",
+            id="case1"
+        )
+    ]
+    return samples
+
 
 @task
-def my_eval():
+def fact_comparator_eval():
+    """
+    Create an evaluation task.
+
+    Returns:
+        Task: The evaluation task.
+    """
     samples = sample_sample()
     SYSTEM_MESSAGE = "Please answer the question being asked."
     return Task(
@@ -270,4 +395,3 @@ def my_eval():
         ],
         scorer=fact_comparator_scorer(model=get_model()),
     )
-
