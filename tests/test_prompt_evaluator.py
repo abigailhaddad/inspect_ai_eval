@@ -8,6 +8,10 @@ from inspect_ai.scorer._metric import Score
 from inspect_ai._eval.eval import EvalLogs
 from inspect_ai.solver import generate, system_message
 from inspect_ai.model import get_model
+import sys
+
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from new_scorers.prompt_evaluator import prompt_scorer
 

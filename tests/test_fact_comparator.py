@@ -7,9 +7,12 @@ from inspect_ai.solver import system_message, generate
 from inspect_ai.model import get_model
 from inspect_ai.scorer import Scorer
 from inspect_ai.log._log import EvalMetric
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Local application imports
-from new_scorers.fact_comparator import FactComparator, ModelComparator, fact_comparator_scorer
+from new_scorers.fact_comparator import fact_comparator_scorer
 from new_scorers.code_from_inspect_ai import InspectChatModel
 
 def parse_arguments():
