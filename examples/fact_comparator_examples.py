@@ -1,13 +1,16 @@
+import argparse
 import asyncio
 import os
 import logging
 from datetime import datetime
 
-os.environ['INSPECT_EVAL_MODEL'] = 'openai/gpt-4'
-os.environ['INSPECT_MODEL_NAME'] = 'openai/gpt-4'
+# Set up argument parsing
+parser = argparse.ArgumentParser(description="Run FactComparator examples.")
+parser.add_argument('--model', type=str, default='openai/gpt-4', help='The model name to use for evaluation.')
+args = parser.parse_args()
 
-from new_scorers.code_from_inspect_ai import InspectChatModel
-from new_scorers.fact_comparator import FactComparator
+# Set environment variable for model name
+os.environ['INSPECT_MODEL_NAME'] = args.model
 
 # Create logs directory if it doesn't exist
 if not os.path.exists('logs'):
@@ -16,6 +19,9 @@ if not os.path.exists('logs'):
 # Set up logging with a timestamped filename
 log_filename = f"logs/fact_comparator_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
 logging.basicConfig(filename=log_filename, level=logging.INFO, format='%(message)s')
+
+from new_scorers.code_from_inspect_ai import InspectChatModel
+from new_scorers.fact_comparator import FactComparator
 
 cases = {
     'case1': {
@@ -97,7 +103,6 @@ cases = {
         'description': 'This case involves boiling and freezing points of water.'
     }
 }
-
 
 async def evaluate_case(case):
     context_text = case['target']
