@@ -25,42 +25,79 @@ cases = {
         'description': 'This is a basic use case with pronouns and mild rephrasing.'
     },
     'case2': {
-        'input': 'The Sun, a medium-sized star, is located at the center of our Solar System and is approximately 4.6 billion years old.',
-        'target': 'The sun is a mid-sized star which has existed for about 4.6 billion years.',
-        'true_metrics': {'groundedness': 67, 'thoroughness': 100},
-        'description': 'This is a basic use case with mild rephrasing.'
+        'input': 'The Sun is a star. It is at the center of our Solar System and is 4.6 billion years old.',
+        'target': 'The sun is at the center of our Solar System and is approximately 4.6 billion years old.',
+        'true_metrics': {'groundedness': 67, 'thoroughness': 67},
+        'description': 'This is a use case with partial fact overlap.'
     },
     'case3': {
-        'input': 'Sally is Rachel\'s cat.',
+        'input': 'Rachel owns a cat named Sally.',
         'target': 'Sally is a cat. Rachel is her owner.',
-        'true_metrics': {'groundedness': 100, 'thoroughness': 100},  
+        'true_metrics': {'groundedness': 100, 'thoroughness': 100},
         'description': 'This case involves simple restructuring and clarification.'
     },
     'case4': {
-        'input': 'Sally is larger than Stan.',
-        'target': 'Stan is smaller than Sally.',
-        'true_metrics': {'groundedness': 100, 'thoroughness': 100}, 
+        'input': 'Stan is smaller than Sally.',
+        'target': 'Sally is larger than Stan.',
+        'true_metrics': {'groundedness': 100, 'thoroughness': 100},
         'description': 'This case demonstrates a change in comparative perspective.'
     },
     'case5': {
-        'input': 'the average temperature today is 20 degrees celsius.',
-        'target': 'the mean temperature today is 68 degrees fahrenheit.',
-        'true_metrics': {'groundedness': 100, 'thoroughness': 100},  
-        'description': 'This case involves unit conversion and synonym use.'
+        'input': 'The temperature today is 20 degrees Celsius.',
+        'target': 'The average temperature today is 20 degrees Celsius.',
+        'true_metrics': {'groundedness': 100, 'thoroughness': 100},
+        'description': 'This case involves exact matching of temperature with slight rephrasing.'
     },
     'case6': {
-        'input': 'the average temperature today is 20 degrees celsius.',
-        'target': 'the average temperature today is 50 degrees celsius.',
-        'true_metrics': {'groundedness': 0, 'thoroughness': 0},  
-        'description': 'This case involves unit conversion and synonym use.'
+        'input': 'The temperature today is 20 degrees Celsius.',
+        'target': 'The average temperature today is 50 degrees Celsius.',
+        'true_metrics': {'groundedness': 0, 'thoroughness': 0},
+        'description': 'This case involves incorrect temperature information.'
     },
     'case7': {
-        'input': 'The company has an ATO now, so they have been sanctioned by the government and you can work with them.', 
-        'target':  'The company has been sanctioned by the government in response to recent lawbreaking activity.' , 
-        'true_metrics': {'groundedness': 0, 'thoroughness': 0},  # Contextual misuse
+        'input': 'The company has an ATO now, so they have been sanctioned by the government and you can work with them.',
+        'target': 'The company has been sanctioned by the government in response to recent lawbreaking activity.',
+        'true_metrics': {'groundedness': 0, 'thoroughness': 0},
         'description': 'This case uses "sanctioned" in a way that highlights its dual meaning: approved or penalized.'
+    },
+    'case8': {
+        'input': 'John is taller than Mike. John is older than Mike.',
+        'target': 'Mike is shorter than John.',
+        'true_metrics': {'groundedness': 100, 'thoroughness': 50},
+        'description': 'This case demonstrates comparative statements with additional facts.'
+    },
+    'case9': {
+        'input': 'Alice went to the market. She bought apples, oranges, and bananas.',
+        'target': 'Alice bought apples and oranges at the market.',
+        'true_metrics': {'groundedness': 67, 'thoroughness': 100},
+        'description': 'This case involves a partial list of items bought at the market.'
+    },
+    'case10': {
+        'input': 'The car is red and fast.',
+        'target': 'The car is red.',
+        'true_metrics': {'groundedness': 50, 'thoroughness': 100},
+        'description': 'This case involves partial attribute description.'
+    },
+    'case11': {
+        'input': 'The city of Paris is in France.',
+        'target': 'Paris is a city in France. It is known for the Eiffel Tower.',
+        'true_metrics': {'groundedness': 100, 'thoroughness': 50},
+        'description': 'This case involves geographic location with additional context in the target.'
+    },
+    'case12': {
+        'input': 'The library opens at 9 AM. The museum opens at 10 AM.',
+        'target': 'The library opens at 9 AM.',
+        'true_metrics': {'groundedness': 100, 'thoroughness': 50},
+        'description': 'This case involves different opening times for different places.'
+    },
+    'case13': {
+        'input': 'Water freezes at 0 degrees Celsius and boils at 100 degrees Celsius.',
+        'target': 'Water boils at 100 degrees Celsius.',
+        'true_metrics': {'groundedness': 50, 'thoroughness': 100},
+        'description': 'This case involves boiling and freezing points of water.'
     }
 }
+
 
 async def evaluate_case(case):
     context_text = case['target']

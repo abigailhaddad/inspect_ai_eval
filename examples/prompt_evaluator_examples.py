@@ -1,38 +1,86 @@
 import asyncio
 import os
+import logging
+from datetime import datetime
 
 os.environ['INSPECT_EVAL_MODEL'] = 'openai/gpt-4'
 os.environ['INSPECT_MODEL_NAME'] = 'openai/gpt-4'
 
 from new_scorers.prompt_evaluator import PromptEvaluator
+from new_scorers.code_from_inspect_ai import InspectChatModel
 
-import unittest
-import os
-from inspect_ai import Task, task, eval
-from inspect_ai.dataset import Sample
-from inspect_ai.log._log import EvalLog, EvalResults, EvalSample
-from inspect_ai.scorer._metric import Score
-from inspect_ai._eval.eval import EvalLogs
-from inspect_ai.solver import generate, system_message
-from inspect_ai.model import get_model
+# Create logs directory if it doesn't exist
+if not os.path.exists('logs'):
+    os.makedirs('logs')
 
-from new_scorers.prompt_evaluator import prompt_scorer
+# Set up logging with a timestamped filename
+log_filename = f"logs/prompt_evaluator_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+logging.basicConfig(filename=log_filename, level=logging.INFO, format='%(message)s')
 
 model = InspectChatModel()
 evaluator = PromptEvaluator(model)
 
 test_cases = [
     {
-        'input_text': 'The Earth is 3 billion years old.',
-        'target_text': 'Return PASS if the answer contains that the sun is 4.6 billion years old, return FAIL otherwise.',
+        'description': 'Checking the number of times the letter "r" appears in the word "carryforward". Pass case.',
+        'input_text': 'The letter r appears four times in the word carryforward.',
+        'target_text': 'Return PASS if the answer says that the letter r is in the word carryforward four times, return FAIL otherwise.',
+        'expected_score': 1
+    },
+    {
+        'description': 'Checking the number of times the letter "r" appears in the word "carryforward". Fail case.',
+        'input_text': 'The letter r appears three times in the word carryforward.',
+        'target_text': 'Return PASS if the answer says that the letter r is in the word carryforward four times, return FAIL otherwise.',
         'expected_score': 0
     },
     {
-        'input_text': 'The Sun is approximately 4.6 billion years old and is a mid-sized star.',
-        'target_text': 'Return PASS if the answer mentions that the sun is 4.6 billion years old, return FAIL otherwise.',
+        'description': 'Checking the time difference between Boston and Copenhagen. Pass case.',
+        'input_text': 'The time in Copenhagen is 6 PM.',
+        'target_text': 'Return PASS if the answer says that the time in Copenhagen is 6 PM, return FAIL otherwise.',
         'expected_score': 1
     },
-    # Add the rest of your test cases here
+    {
+        'description': 'Checking the time difference between Boston and Copenhagen. Fail case.',
+        'input_text': 'The time in Copenhagen is 7 PM.',
+        'target_text': 'Return PASS if the answer says that the time in Copenhagen is 6 PM, return FAIL otherwise.',
+        'expected_score': 0
+    },
+    {
+        'description': 'Finding the letter on the keyboard based on the given instructions. Pass case.',
+        'input_text': 'The letter is "y".',
+        'target_text': 'Return PASS if the answer says that "y" is the letter, return FAIL otherwise.',
+        'expected_score': 1
+    },
+    {
+        'description': 'Finding the letter on the keyboard based on the given instructions. Fail case.',
+        'input_text': 'The letter is "t".',
+        'target_text': 'Return PASS if the answer says that "y" is the letter, return FAIL otherwise.',
+        'expected_score': 0
+    },
+    {
+        'description': 'Determining which is heavier between 2 tons of feathers and 1 ton of bricks. Pass case.',
+        'input_text': '2 tons of feathers are heavier than 1 ton of bricks.',
+        'target_text': 'Return PASS if the answer says that the feathers are heavier and does not at any point say they weigh the same amount, return FAIL otherwise.',
+        'expected_score': 1
+    },
+    {
+        'description': 'Determining which is heavier between 2 tons of feathers and 1 ton of bricks. Fail case.',
+        'input_text': '2 tons of feathers and 1 ton of bricks weigh the same.',
+        'target_text': 'Return PASS if the answer says that the feathers are heavier and does not at any point say they weigh the same amount, return FAIL otherwise.',
+        'expected_score': 0
+    },
+    {
+        'description': 'Solving the teleportation logic problem involving Doom Slayer and his companions. Pass case.',
+        'input_text': 'Teleport with the Cacodemon, then teleport with the Bunny. Return with the Cacodemon, teleport with the Scientist, and finally teleport with the Cacodemon.',
+        'target_text': 'Return PASS if the answer contains the following steps in this order: 1) Teleport with the Cacodemon, 2) Teleport with the Bunny, 3) Return with the Cacodemon, 4) Teleport with the Scientist, 5) Teleport with the Cacodemon. It may also include "teleport alone" steps, return FAIL otherwise.',
+        'expected_score': 1
+    },
+    {
+        'description': 'Solving the teleportation logic problem involving Doom Slayer and his companions. Fail case.',
+        'input_text': 'Teleport with the Bunny, then teleport with the Cacodemon. Return with the Bunny, teleport with the Scientist, and finally teleport with the Cacodemon.',
+        'target_text': 'Return PASS if the answer contains the following steps in this order: 1) Teleport with the Cacodemon, 2) Teleport with the Bunny, 3) Return with the Cacodemon, 4) Teleport with the Scientist, 5) Teleport with the Cacodemon. It may also include "teleport alone" steps, return FAIL otherwise.',
+        'expected_score': 0
+    }
 ]
 
 async def evaluate_example(example):
@@ -48,25 +96,43 @@ async def evaluate_example(example):
     except Exception as e:
         return False, str(e), expected_score
 
+async def run_all_examples():
+    tasks = [evaluate_example(example) for example in test_cases]
+    return await asyncio.gather(*tasks)
+
 def main():
     print("Running all examples...\n")
     results = asyncio.run(run_all_examples())
 
-    print("\nPerformance Report:")
-    for i, (example, (test_passed, model_result, expected)) in enumerate(zip(test_cases, results), 1):
-        print(f"Example {i}:")
-        print(f"  Input: '{example['input_text']}'")
-        print(f"  Target: '{example['target_text']}'")
-        print(f"  Model Result: {model_result}")
-        if test_passed:
-            print("  Test Result: PASS")
-        else:
-            print(f"  Test Result: FAIL (Expected: {'PASS' if expected == 1 else 'FAIL'})")
-        print("")
+    summary = {"pass": 0, "fail": 0}
 
-async def run_all_examples():
-    tasks = [evaluate_example(example) for example in test_cases]
-    return await asyncio.gather(*tasks)
+    print("\nPerformance Report:")
+    logging.info(f"Detailed Performance Report for PromptEvaluator:")
+    for i, (example, (test_passed, model_result, expected)) in enumerate(zip(test_cases, results), 1):
+        test_result = 'PASS' if test_passed else 'FAIL'
+        summary[test_result.lower()] += 1
+
+        report = (
+            f"Example {i}:\n"
+            f"  Description: {example['description']}\n"
+            f"  Input: '{example['input_text']}'\n"
+            f"  Target: '{example['target_text']}'\n"
+            f"  Model Result: {model_result}\n"
+            f"  Test Result: {test_result} (Expected: {'PASS' if expected == 1 else 'FAIL'})\n"
+        )
+
+        print(report)
+        logging.info(report)
+
+    summary_report = (
+        "\nSummary:\n"
+        f"  Total Examples: {len(test_cases)}\n"
+        f"  Passed: {summary['pass']}\n"
+        f"  Failed: {summary['fail']}\n"
+    )
+
+    print(summary_report)
+    logging.info(summary_report)
 
 if __name__ == "__main__":
     main()
