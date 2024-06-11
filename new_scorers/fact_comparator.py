@@ -359,39 +359,4 @@ def fact_comparator_scorer(model) -> Scorer:
     return score
 
 
-def sample_sample():
-    """
-    Create sample data for evaluation.
 
-    Returns:
-        list: A list of sample data.
-    """
-    samples = [
-        Sample(
-            input="How old is the sun?",
-            target="The sun is approximately 4.6 billion years old. It's a mid-sized star.",
-            description="Very basic question.",
-            id="case1"
-        )
-    ]
-    return samples
-
-
-@task
-def fact_comparator_eval():
-    """
-    Create an evaluation task.
-
-    Returns:
-        Task: The evaluation task.
-    """
-    samples = sample_sample()
-    SYSTEM_MESSAGE = "Please answer the question being asked."
-    return Task(
-        dataset=samples,
-        plan=[
-            system_message(SYSTEM_MESSAGE),
-            generate()
-        ],
-        scorer=fact_comparator_scorer(model=get_model()),
-    )
