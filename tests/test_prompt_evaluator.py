@@ -1,6 +1,5 @@
 import unittest
 import os
-import argparse
 from inspect_ai import Task, task, eval
 from inspect_ai.dataset import Sample
 from inspect_ai.log._log import EvalLog, EvalResults, EvalSample
@@ -10,21 +9,9 @@ from inspect_ai.solver import generate, system_message
 from inspect_ai.model import get_model
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from new_scorers.prompt_evaluator import prompt_scorer
-
-def parse_arguments():
-    parser = argparse.ArgumentParser(description="Run PromptEvaluator tests.")
-    parser.add_argument('--model', type=str, default='openai/gpt-4', help='The model name to use for evaluation.')
-    return parser.parse_args()
-
-args = parse_arguments()
-
-os.environ['INSPECT_EVAL_MODEL'] = args.model
-os.environ['INSPECT_MODEL_NAME'] = args.model
-os.environ['PYTHONIOENCODING'] = 'utf-8'
 
 @task
 def prompt_evaluator_eval():
@@ -64,6 +51,12 @@ class TestPromptEvaluator(unittest.TestCase):
     for the PromptEvaluator class.
     """
 
+    def setUp(self):
+        self.model = 'openai/gpt-4'
+        os.environ['INSPECT_EVAL_MODEL'] = self.model
+        os.environ['INSPECT_MODEL_NAME'] = self.model
+        os.environ['PYTHONIOENCODING'] = 'utf-8'
+
     def test_prompt_evaluator_eval_task(self):
         """
         Test the `prompt_evaluator_eval` function.
@@ -76,7 +69,7 @@ class TestPromptEvaluator(unittest.TestCase):
             self.assertIsInstance(task, Task)
 
             # Run the evaluation
-            eval_results = eval(task, model=args.model)
+            eval_results = eval(task, model=self.model)
             self.assertIsInstance(eval_results, EvalLogs)
 
             # Check the first item in the results list

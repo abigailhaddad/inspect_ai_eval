@@ -1,6 +1,5 @@
 import unittest
 import os
-import argparse
 from inspect_ai import Task, task, eval
 from inspect_ai.dataset import Sample
 from inspect_ai.solver import system_message, generate
@@ -15,20 +14,13 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from new_scorers.fact_comparator import fact_comparator_scorer
 from new_scorers.code_from_inspect_ai import InspectChatModel
 
-def parse_arguments():
-    parser = argparse.ArgumentParser(description="Run FactComparator tests.")
-    parser.add_argument('--model', type=str, default='openai/gpt-4', help='The model name to use for evaluation.')
-    return parser.parse_args()
-
-args = parse_arguments()
-
-os.environ['INSPECT_EVAL_MODEL'] = args.model
-os.environ['INSPECT_MODEL_NAME'] = args.model
-os.environ['PYTHONIOENCODING'] = 'utf-8'
-
 class TestFactComparatorEvaluation(unittest.TestCase):
     def setUp(self):
-        self.model = InspectChatModel()
+        self.model = 'openai/gpt-4'
+        os.environ['INSPECT_EVAL_MODEL'] = self.model
+        os.environ['INSPECT_MODEL_NAME'] = self.model
+        os.environ['PYTHONIOENCODING'] = 'utf-8'
+        self.inspect_model = InspectChatModel()
 
     def test_create_sample_data(self):
         samples = sample_data()
@@ -37,14 +29,14 @@ class TestFactComparatorEvaluation(unittest.TestCase):
 
     def test_fact_comparator_eval_task(self):
         try:
-            task = fact_comparator_eval(args.model)
+            task = fact_comparator_eval(self.model)
             self.assertIsInstance(task, Task)
 
             self.assertTrue(hasattr(task, 'scorer'))
             self.assertIsInstance(task.scorer, Scorer)
             
             # Run the evaluation
-            eval_results = eval(task, model=args.model)
+            eval_results = eval(task, model=self.model)
             
             # Check if eval_results is a list
             self.assertIsInstance(eval_results, list)
