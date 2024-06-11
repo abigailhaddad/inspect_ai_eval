@@ -21,7 +21,7 @@ python fact_comparator_examples.py --model openai/gpt-3.5-turbo
 
 ### Purpose
 
-These scripts are specifically designed for testing the scorers. They do not run the full task process where a model is asked questions and then evaluates the output. Instead, we provide specific text inputs and evaluate them using the scorers.
+These scripts are specifically designed for seeing how well a particular model performs at evaluation, using these scorers. They do not run the full task process where a model is asked questions, and that input is evaluated. Instead, we provide specific text inputs, use an evaluation model, and compare the model evaluation outputs to the desired outputs. 
 
 ### Scorers
 
@@ -40,11 +40,11 @@ The `PromptEvaluator` evaluates whether the provided input text meets certain co
 }
 ```
 
-**Explanation:** In this test case, the input text is evaluated against the target text's condition. If the input text correctly mentions the number of times 'r' appears in 'carryforward', it passes.
+**Explanation:** In this test case, the input text is evaluated against the target text's condition. The input text says that the letter r appears four times. This is what the target_text, or prompt, is looking for. We're evaluating for whether the model, in conjunction with the scorer, returns a 1. If it does, it passes. 
 
 #### FactComparator
 
-The `FactComparator` compares facts between a context (target) and an answer (input). It evaluates the groundedness and thoroughness of the input based on how many facts from the context are included.
+The `FactComparator` compares facts between a context (target) and an answer (input). It evaluates the groundedness and thoroughness of the input based on the overlap between these two texts.
 
 **Example Test Case:**
 
@@ -57,4 +57,6 @@ The `FactComparator` compares facts between a context (target) and an answer (in
 }
 ```
 
-**Explanation:** In this test case, the input text is compared with the target text. Groundedness measures the percentage of facts in the input that are also in the target. Thoroughness measures the percentage of facts in the target that are also in the input.
+**Explanation:** In this test case, the the input text contains two facts and those are the same facts as in the target text. Because of this, the desired behavior from the scorers is to return groundedness and thoroughness measures of 100. If it returns these, it passes.
+
+These examples are not tests of the code running, but rather tests of how well the model is performing in conjunction with the scorers.
