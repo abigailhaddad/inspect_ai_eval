@@ -1,5 +1,6 @@
 import unittest
 import os
+import argparse
 from inspect_ai import Task, task, eval
 from inspect_ai.dataset import Sample
 from inspect_ai.solver import system_message, generate
@@ -11,8 +12,15 @@ from inspect_ai.log._log import EvalMetric
 from new_scorers.fact_comparator import FactComparator, ModelComparator, fact_comparator_scorer
 from new_scorers.code_from_inspect_ai import InspectChatModel
 
-os.environ['INSPECT_EVAL_MODEL'] = 'openai/gpt-4'
-os.environ['INSPECT_MODEL_NAME'] = 'openai/gpt-4'
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Run FactComparator tests.")
+    parser.add_argument('--model', type=str, default='openai/gpt-4', help='The model name to use for evaluation.')
+    return parser.parse_args()
+
+args = parse_arguments()
+
+os.environ['INSPECT_EVAL_MODEL'] = args.model
+os.environ['INSPECT_MODEL_NAME'] = args.model
 os.environ['PYTHONIOENCODING'] = 'utf-8'
 
 class TestFactComparatorEvaluation(unittest.TestCase):
@@ -26,14 +34,14 @@ class TestFactComparatorEvaluation(unittest.TestCase):
 
     def test_fact_comparator_eval_task(self):
         try:
-            task = fact_comparator_eval()
+            task = fact_comparator_eval(args.model)
             self.assertIsInstance(task, Task)
 
             self.assertTrue(hasattr(task, 'scorer'))
             self.assertIsInstance(task.scorer, Scorer)
             
             # Run the evaluation
-            eval_results = eval(task, model="openai/gpt-4")
+            eval_results = eval(task, model=args.model)
             
             # Check if eval_results is a list
             self.assertIsInstance(eval_results, list)
@@ -98,7 +106,7 @@ def sample_data():
     return samples
 
 @task
-def fact_comparator_eval():
+def fact_comparator_eval(model_name):
     """
     Create an evaluation task for the fact comparator.
 
@@ -113,8 +121,8 @@ def fact_comparator_eval():
             system_message(SYSTEM_MESSAGE),
             generate()
         ],
-        scorer=fact_comparator_scorer(model=get_model()),
+        scorer=fact_comparator_scorer(model=get_model(model_name)),
     )
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(argv=['first-arg-is-ignored'], exit=False)

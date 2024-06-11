@@ -4,6 +4,10 @@ import os
 import logging
 from datetime import datetime
 
+from new_scorers.prompt_evaluator import PromptEvaluator
+from new_scorers.code_from_inspect_ai import InspectChatModel
+
+
 # Set up argument parsing
 parser = argparse.ArgumentParser(description="Run Prompt Evaluator examples.")
 parser.add_argument('--model', type=str, default='openai/gpt-4', help='The model name to use for evaluation.')
@@ -18,9 +22,6 @@ if not os.path.exists('logs'):
 
 log_filename = f"logs/prompt_evaluator_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
 logging.basicConfig(filename=log_filename, level=logging.INFO, format='%(message)s')
-
-from new_scorers.prompt_evaluator import PromptEvaluator
-from new_scorers.code_from_inspect_ai import InspectChatModel
 
 model = InspectChatModel()
 evaluator = PromptEvaluator(model)
