@@ -10,18 +10,21 @@ from inspect_ai.model import get_model
 
 from new_scorers.prompt_evaluator import prompt_scorer
 
-os.environ['INSPECT_EVAL_MODEL'] = 'openai/gpt-4'
-os.environ['INSPECT_MODEL_NAME'] = 'openai/gpt-4'
+
 os.environ['PYTHONIOENCODING'] = 'utf-8'
 
+
 @task
-def prompt_evaluator_eval():
+def prompt_evaluator_eval(model_name):
     """
     Create a classification evaluation task.
 
     This function creates a task for evaluating a language model's ability to answer a specific question.
     The task includes a single sample with an input question and a target condition for determining whether
     the model's answer is correct.
+
+    Args:
+        model_name (str): The name of the language model to use.
 
     Returns:
         Task: The classification evaluation task.
@@ -41,7 +44,7 @@ def prompt_evaluator_eval():
             system_message(SYSTEM_MESSAGE),
             generate()
         ],
-        scorer=prompt_scorer(model=get_model()),
+        scorer=prompt_scorer(model_name=model_name),
     )
 
 class TestPromptEvaluator(unittest.TestCase):

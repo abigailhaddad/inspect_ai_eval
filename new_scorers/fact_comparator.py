@@ -1,22 +1,12 @@
-import sys
-from new_scorers.code_from_inspect_ai import InspectChatModel
-import random
 from inspect_ai.dataset import Sample
-from inspect_ai import eval, Task, task
-from inspect_ai.model import get_model
-from inspect_ai.solver import TaskState, generate, system_message
+from inspect_ai.solver import TaskState
 from inspect_ai.scorer import Score, Scorer, Target, metric, scorer
 from langchain.prompts import PromptTemplate
-from langchain_community.llms import OpenAI
-from langchain.chains import LLMChain
 from langchain.output_parsers import PydanticOutputParser
 from langchain_core.pydantic_v1 import BaseModel, Field
-import pandas as pd
-import asyncio
-from typing import Dict, Tuple
-from ast import literal_eval
 from langchain_core.messages import HumanMessage
-import os
+
+from new_scorers.code_from_inspect_ai import InspectChatModel
 
 class FactComparator:
     """
@@ -84,8 +74,11 @@ class FactComparator:
         total_answer_facts = facts_in_both_count + facts_only_in_answer_count
         total_context_facts = facts_in_both_count + facts_only_in_context_count
 
-        groundedness = facts_in_both_count / total_answer_facts * 100 if total_answer_facts > 0 else 0
-        thoroughness = facts_in_both_count / total_context_facts * 100 if total_context_facts > 0 else 0
+        # Groundedness is the proportion of facts in the answer that are also in the context
+        groundedness = (facts_in_both_count / total_answer_facts) * 100 if total_answer_facts > 0 else 0
+
+        # Thoroughness is the proportion of facts in the context that are also in the answer
+        thoroughness = (facts_in_both_count / total_context_facts) * 100 if total_context_facts > 0 else 0
 
         return {
             "groundedness": groundedness,
@@ -173,7 +166,6 @@ class FactComparator:
             """,
         )
 
-
 class ComparisonResult(BaseModel):
     """
     A Pydantic model for representing the comparison result.
@@ -181,6 +173,7 @@ class ComparisonResult(BaseModel):
     facts_in_both: list[str] = Field(default_factory=list, description="List of facts present in both context and answer")
     facts_only_in_answer: list[str] = Field(default_factory=list, description="List of facts only present in the answer")
     facts_only_in_context: list[str] = Field(default_factory=list, description="List of facts only present in the context")
+
 
 
 class ModelComparator:

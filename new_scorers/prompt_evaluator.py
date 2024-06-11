@@ -1,21 +1,11 @@
 from langchain.prompts import PromptTemplate
-from new_scorers.code_from_inspect_ai import InspectChatModel
-from inspect_ai import eval, Task, task
-from inspect_ai.model import get_model
-from inspect_ai.solver import TaskState, generate, system_message
-from inspect_ai.scorer import Score, Scorer, Target, metric, scorer
-from langchain.prompts import PromptTemplate
-from langchain_community.llms import OpenAI
-from langchain.chains import LLMChain
-from langchain.output_parsers import PydanticOutputParser
-from langchain_core.pydantic_v1 import BaseModel, Field
-import pandas as pd
-import asyncio
-from inspect_ai.dataset import Sample
-from typing import Dict, Tuple
-from ast import literal_eval
 from langchain_core.messages import HumanMessage
-import os
+from inspect_ai.solver import TaskState
+from inspect_ai.scorer import Score, Scorer, metric, scorer
+from inspect_ai.dataset import Sample
+
+
+from new_scorers.code_from_inspect_ai import InspectChatModel
 
 class PromptEvaluator:
     """
@@ -139,28 +129,3 @@ def prompt_scorer(model) -> Scorer:
     """
     return PromptEvaluatorWrapper(model)
 
-@task
-def prompt_evaluator_eval():
-    """
-    Create a classification evaluation task.
-
-    Returns:
-        Task: The classification evaluation task.
-    """
-    samples = [
-        Sample(
-            input="How old is the sun?",
-            target="Return PASS if the answer contains that the sun is 4.6 billion years old, return FAIL otherwise.",
-            description="Very basic question.",
-            id="case1"
-        )
-    ]
-    SYSTEM_MESSAGE = "Please answer the question being asked."
-    return Task(
-        dataset=samples,
-        plan=[
-            system_message(SYSTEM_MESSAGE),
-            generate()
-        ],
-        scorer=prompt_scorer(model=get_model()),
-    )
