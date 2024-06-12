@@ -11,8 +11,8 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Local application imports
-from new_scorers.fact_comparator import fact_comparator_scorer
-from new_scorers.code_from_inspect_ai import InspectChatModel
+from inspect_ai_scorers.fact_comparator import fact_comparator_scorer
+from inspect_ai_scorers.code_from_inspect_ai import InspectChatModel
 
 class TestFactComparatorEvaluation(unittest.TestCase):
     def setUp(self):

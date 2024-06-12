@@ -11,7 +11,7 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from new_scorers.prompt_evaluator import prompt_scorer
+from inspect_ai_scorers.prompt_evaluator import prompt_scorer
 
 @task
 def prompt_evaluator_eval():

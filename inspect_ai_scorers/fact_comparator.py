@@ -6,7 +6,7 @@ from langchain.output_parsers import PydanticOutputParser
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_core.messages import HumanMessage
 
-from new_scorers.code_from_inspect_ai import InspectChatModel
+from inspect_ai_scorers.code_from_inspect_ai import InspectChatModel
 
 class FactComparator:
     """

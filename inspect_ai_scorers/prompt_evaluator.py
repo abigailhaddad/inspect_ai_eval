@@ -5,7 +5,7 @@ from inspect_ai.scorer import Score, Scorer, metric, scorer
 from inspect_ai.dataset import Sample
 
 
-from new_scorers.code_from_inspect_ai import InspectChatModel
+from inspect_ai_scorers.code_from_inspect_ai import InspectChatModel
 
 class PromptEvaluator:
     """

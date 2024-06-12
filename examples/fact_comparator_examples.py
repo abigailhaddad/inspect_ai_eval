@@ -20,8 +20,8 @@ if not os.path.exists('logs'):
 log_filename = f"logs/fact_comparator_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
 logging.basicConfig(filename=log_filename, level=logging.INFO, format='%(message)s')
 
-from new_scorers.code_from_inspect_ai import InspectChatModel
-from new_scorers.fact_comparator import FactComparator
+from inspect_ai_scorers.code_from_inspect_ai import InspectChatModel
+from inspect_ai_scorers.fact_comparator import FactComparator
 
 cases = {
     'case1': {

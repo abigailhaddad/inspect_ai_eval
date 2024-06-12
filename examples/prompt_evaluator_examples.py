@@ -4,8 +4,8 @@ import os
 import logging
 from datetime import datetime
 
-from new_scorers.prompt_evaluator import PromptEvaluator
-from new_scorers.code_from_inspect_ai import InspectChatModel
+from inspect_ai_scorers.prompt_evaluator import PromptEvaluator
+from inspect_ai_scorers.code_from_inspect_ai import InspectChatModel
 
 
 # Set up argument parsing
