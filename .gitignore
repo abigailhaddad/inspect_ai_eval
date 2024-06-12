@@ -10,4 +10,7 @@
 *.egg-info/
 /docs/_build/
 /docs/build/
+*.pyc
+*.pyo
+
 MANIFEST
