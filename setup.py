@@ -10,7 +10,7 @@ def parse_requirements(filename):
 
 setup(
     name='inspect_ai_scorers',
-    version='0.1.0',
+    version='0.1.1',
     description='Adds scorers for usage with the inspect_ai package',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
