@@ -18,7 +18,7 @@ setup(
     author_email='abigail.haddad@gmail.com',
     url='https://github.com/abigailhaddad/inspect_ai_eval',
     license='MIT',
-    packages=find_packages(),
+    packages=['new_scorers'],
     install_requires=parse_requirements('requirements.txt'),
     classifiers=[
         'Development Status :: 4 - Beta',
