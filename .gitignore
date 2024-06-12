@@ -3,3 +3,14 @@
 /code/logs/
 /tests/logs/
 /examples/logs/
+/devenv/
+/build/
+/dist/
+/__pycache__/
+*.egg-info/
+/docs/_build/
+/docs/build/
+*.pyc
+*.pyo
+
+MANIFEST
