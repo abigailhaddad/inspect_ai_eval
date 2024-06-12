@@ -57,10 +57,16 @@ class PromptEvaluator:
             final_result (str): The final result from the model.
 
         Returns:
-            int: The pass value (1 if "PASS" is in the result, otherwise 0).
+            int: The pass value (1 if "PASS" is in the result, 0 if "FAIL" is in the result, otherwise -1).
         """
-        pass_value = 1 if "PASS" in final_result else 0
+        if "PASS" in final_result:
+            pass_value = 1
+        elif "FAIL" in final_result:
+            pass_value = 0
+        else:
+            pass_value = -1
         return pass_value
+
 
 class PromptEvaluatorWrapper(Scorer):
     """
