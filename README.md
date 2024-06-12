@@ -21,3 +21,7 @@ To use these scorers, you'll need to install the dependencies listed in the `req
 ## Testing
 
 Very preliminary unit tests for the `FactComparator` and `PromptScorer` classes are provided in `test_fact_comparator.py` and `test_prompt_scorer.py`, respectively.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
