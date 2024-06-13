@@ -10,7 +10,7 @@ def parse_requirements(filename):
 
 setup(
     name='inspect_ai_scorers',
-    version='0.1.1',
+    version='0.1.6',
     description='Adds scorers for usage with the inspect_ai package',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
@@ -18,7 +18,12 @@ setup(
     author_email='abigail.haddad@gmail.com',
     url='https://github.com/abigailhaddad/inspect_ai_eval',
     license='MIT',
-    packages=['inspect_ai_scorers'],
+    packages=find_packages(include=['inspect_ai_scorers', 'inspect_ai_scorers.*', 'tests', 'tests.*', 'examples', 'examples.*']),
+    include_package_data=True,
+    package_data={
+    'inspect_ai_scorers': ['examples/*'],
+    'tests': ['*']
+},
     install_requires=parse_requirements('requirements.txt'),
     classifiers=[
         'Development Status :: 4 - Beta',
