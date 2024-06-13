@@ -3,3 +3,10 @@ include LICENSE
 include requirements.txt
 recursive-include tests *
 recursive-include examples *
+include *.IN
+include *.bat
+include *.py
+include Makefile
+recursive-include docs *.py
+recursive-include docs *.rst
+recursive-include inspect_ai_scorers *.json
