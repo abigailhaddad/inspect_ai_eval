@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>inspect_ai_scorers package &mdash; Inspect AI Scorers 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=01f34227"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to Inspect AI Scorers’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Inspect AI Scorers
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">inspect_ai_scorers package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#inspect-ai-scorers-code-from-inspect-ai-module">inspect_ai_scorers.code_from_inspect_ai module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#inspect_ai_scorers.code_from_inspect_ai.InspectChatModel"><code class="docutils literal notranslate"><span class="pre">InspectChatModel</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#inspect_ai_scorers.code_from_inspect_ai.InspectChatModel.messages"><code class="docutils literal notranslate"><span class="pre">InspectChatModel.messages</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inspect_ai_scorers.code_from_inspect_ai.InspectChatModel.output"><code class="docutils literal notranslate"><span class="pre">InspectChatModel.output</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#inspect_ai_scorers.code_from_inspect_ai.LangChainAgent"><code class="docutils literal notranslate"><span class="pre">LangChainAgent</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inspect_ai_scorers.code_from_inspect_ai.as_inspect_content"><code class="docutils literal notranslate"><span class="pre">as_inspect_content()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inspect_ai_scorers.code_from_inspect_ai.as_inspect_message"><code class="docutils literal notranslate"><span class="pre">as_inspect_message()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inspect_ai_scorers.code_from_inspect_ai.as_inspect_tool_params"><code class="docutils literal notranslate"><span class="pre">as_inspect_tool_params()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inspect_ai_scorers.code_from_inspect_ai.as_langchain_chat_history"><code class="docutils literal notranslate"><span class="pre">as_langchain_chat_history()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inspect_ai_scorers.code_from_inspect_ai.as_langchain_content"><code class="docutils literal notranslate"><span class="pre">as_langchain_content()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inspect_ai_scorers.code_from_inspect_ai.as_langchain_message"><code class="docutils literal notranslate"><span class="pre">as_langchain_message()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inspect_ai_scorers.code_from_inspect_ai.langchain_solver"><code class="docutils literal notranslate"><span class="pre">langchain_solver()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#inspect-ai-scorers-fact-comparator-module">inspect_ai_scorers.fact_comparator module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#inspect_ai_scorers.fact_comparator.ComparisonResult"><code class="docutils literal notranslate"><span class="pre">ComparisonResult</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#inspect_ai_scorers.fact_comparator.ComparisonResult.facts_in_both"><code class="docutils literal notranslate"><span class="pre">ComparisonResult.facts_in_both</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inspect_ai_scorers.fact_comparator.ComparisonResult.facts_only_in_answer"><code class="docutils literal notranslate"><span class="pre">ComparisonResult.facts_only_in_answer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inspect_ai_scorers.fact_comparator.ComparisonResult.facts_only_in_context"><code class="docutils literal notranslate"><span class="pre">ComparisonResult.facts_only_in_context</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#inspect_ai_scorers.fact_comparator.FactComparator"><code class="docutils literal notranslate"><span class="pre">FactComparator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#inspect_ai_scorers.fact_comparator.FactComparator.calculate_metrics"><code class="docutils literal notranslate"><span class="pre">FactComparator.calculate_metrics()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inspect_ai_scorers.fact_comparator.FactComparator.process_data"><code class="docutils literal notranslate"><span class="pre">FactComparator.process_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#inspect_ai_scorers.fact_comparator.FactComparatorScorer"><code class="docutils literal notranslate"><span class="pre">FactComparatorScorer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inspect_ai_scorers.fact_comparator.ModelComparator"><code class="docutils literal notranslate"><span class="pre">ModelComparator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#inspect_ai_scorers.fact_comparator.ModelComparator.run_and_compare"><code class="docutils literal notranslate"><span class="pre">ModelComparator.run_and_compare()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-inspect_ai_scorers.prompt_evaluator">inspect_ai_scorers.prompt_evaluator module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#inspect_ai_scorers.prompt_evaluator.PromptEvaluator"><code class="docutils literal notranslate"><span class="pre">PromptEvaluator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#inspect_ai_scorers.prompt_evaluator.PromptEvaluator.process_data"><code class="docutils literal notranslate"><span class="pre">PromptEvaluator.process_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#inspect_ai_scorers.prompt_evaluator.PromptEvaluatorWrapper"><code class="docutils literal notranslate"><span class="pre">PromptEvaluatorWrapper</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Inspect AI Scorers</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">inspect_ai_scorers package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/inspect_ai_scorers.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="inspect-ai-scorers-package">
+<h1>inspect_ai_scorers package<a class="headerlink" href="#inspect-ai-scorers-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<span id="module-inspect_ai_scorers"></span><h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="inspect-ai-scorers-code-from-inspect-ai-module">
+<h2>inspect_ai_scorers.code_from_inspect_ai module<a class="headerlink" href="#inspect-ai-scorers-code-from-inspect-ai-module" title="Link to this heading"></a></h2>
+<dl class="py class" id="module-inspect_ai_scorers.code_from_inspect_ai">
+<dt class="sig sig-object py" id="inspect_ai_scorers.code_from_inspect_ai.InspectChatModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">inspect_ai_scorers.code_from_inspect_ai.</span></span><span class="sig-name descname"><span class="pre">InspectChatModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseCache</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callbacks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callbacks</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_get_token_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback_manager</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseCallbackManager</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">messages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">ChatMessageSystem</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ChatMessageUser</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ChatMessageAssistant</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ChatMessageTool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelOutput</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ModelOutput(model='',</span> <span class="pre">choices=[],</span> <span class="pre">usage=None,</span> <span class="pre">error=None)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inspect_ai_scorers/code_from_inspect_ai.html#InspectChatModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inspect_ai_scorers.code_from_inspect_ai.InspectChatModel" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseChatModel</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="inspect_ai_scorers.code_from_inspect_ai.InspectChatModel.messages">
+<span class="sig-name descname"><span class="pre">messages</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">ChatMessageSystem</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ChatMessageUser</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ChatMessageAssistant</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ChatMessageTool</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#inspect_ai_scorers.code_from_inspect_ai.InspectChatModel.messages" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="inspect_ai_scorers.code_from_inspect_ai.InspectChatModel.output">
+<span class="sig-name descname"><span class="pre">output</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ModelOutput</span></em><a class="headerlink" href="#inspect_ai_scorers.code_from_inspect_ai.InspectChatModel.output" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="inspect_ai_scorers.code_from_inspect_ai.LangChainAgent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">inspect_ai_scorers.code_from_inspect_ai.</span></span><span class="sig-name descname"><span class="pre">LangChainAgent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inspect_ai_scorers/code_from_inspect_ai.html#LangChainAgent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inspect_ai_scorers.code_from_inspect_ai.LangChainAgent" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="inspect_ai_scorers.code_from_inspect_ai.as_inspect_content">
+<span class="sig-prename descclassname"><span class="pre">inspect_ai_scorers.code_from_inspect_ai.</span></span><span class="sig-name descname"><span class="pre">as_inspect_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">ContentText</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ContentImage</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/inspect_ai_scorers/code_from_inspect_ai.html#as_inspect_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inspect_ai_scorers.code_from_inspect_ai.as_inspect_content" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="inspect_ai_scorers.code_from_inspect_ai.as_inspect_message">
+<span class="sig-prename descclassname"><span class="pre">inspect_ai_scorers.code_from_inspect_ai.</span></span><span class="sig-name descname"><span class="pre">as_inspect_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseMessage</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ChatMessageSystem</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ChatMessageUser</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ChatMessageAssistant</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ChatMessageTool</span></span></span><a class="reference internal" href="_modules/inspect_ai_scorers/code_from_inspect_ai.html#as_inspect_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inspect_ai_scorers.code_from_inspect_ai.as_inspect_message" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="inspect_ai_scorers.code_from_inspect_ai.as_inspect_tool_params">
+<span class="sig-prename descclassname"><span class="pre">inspect_ai_scorers.code_from_inspect_ai.</span></span><span class="sig-name descname"><span class="pre">as_inspect_tool_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">ToolParam</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/inspect_ai_scorers/code_from_inspect_ai.html#as_inspect_tool_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inspect_ai_scorers.code_from_inspect_ai.as_inspect_tool_params" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="inspect_ai_scorers.code_from_inspect_ai.as_langchain_chat_history">
+<span class="sig-prename descclassname"><span class="pre">inspect_ai_scorers.code_from_inspect_ai.</span></span><span class="sig-name descname"><span class="pre">as_langchain_chat_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">messages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">ChatMessageSystem</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ChatMessageUser</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ChatMessageAssistant</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ChatMessageTool</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/inspect_ai_scorers/code_from_inspect_ai.html#as_langchain_chat_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inspect_ai_scorers.code_from_inspect_ai.as_langchain_chat_history" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="inspect_ai_scorers.code_from_inspect_ai.as_langchain_content">
+<span class="sig-prename descclassname"><span class="pre">inspect_ai_scorers.code_from_inspect_ai.</span></span><span class="sig-name descname"><span class="pre">as_langchain_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">ContentText</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ContentImage</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/inspect_ai_scorers/code_from_inspect_ai.html#as_langchain_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inspect_ai_scorers.code_from_inspect_ai.as_langchain_content" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="inspect_ai_scorers.code_from_inspect_ai.as_langchain_message">
+<span class="sig-prename descclassname"><span class="pre">inspect_ai_scorers.code_from_inspect_ai.</span></span><span class="sig-name descname"><span class="pre">as_langchain_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ChatMessageSystem</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ChatMessageUser</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ChatMessageAssistant</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ChatMessageTool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">BaseMessage</span></span></span><a class="reference internal" href="_modules/inspect_ai_scorers/code_from_inspect_ai.html#as_langchain_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inspect_ai_scorers.code_from_inspect_ai.as_langchain_message" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="inspect_ai_scorers.code_from_inspect_ai.langchain_solver">
+<span class="sig-prename descclassname"><span class="pre">inspect_ai_scorers.code_from_inspect_ai.</span></span><span class="sig-name descname"><span class="pre">langchain_solver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#inspect_ai_scorers.code_from_inspect_ai.LangChainAgent" title="inspect_ai_scorers.code_from_inspect_ai.LangChainAgent"><span class="pre">LangChainAgent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Solver</span></span></span><a class="reference internal" href="_modules/inspect_ai_scorers/code_from_inspect_ai.html#langchain_solver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inspect_ai_scorers.code_from_inspect_ai.langchain_solver" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="inspect-ai-scorers-fact-comparator-module">
+<h2>inspect_ai_scorers.fact_comparator module<a class="headerlink" href="#inspect-ai-scorers-fact-comparator-module" title="Link to this heading"></a></h2>
+<dl class="py class" id="module-inspect_ai_scorers.fact_comparator">
+<dt class="sig sig-object py" id="inspect_ai_scorers.fact_comparator.ComparisonResult">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">inspect_ai_scorers.fact_comparator.</span></span><span class="sig-name descname"><span class="pre">ComparisonResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facts_in_both</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facts_only_in_answer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facts_only_in_context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inspect_ai_scorers/fact_comparator.html#ComparisonResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inspect_ai_scorers.fact_comparator.ComparisonResult" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>A Pydantic model for representing the comparison result.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="inspect_ai_scorers.fact_comparator.ComparisonResult.facts_in_both">
+<span class="sig-name descname"><span class="pre">facts_in_both</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#inspect_ai_scorers.fact_comparator.ComparisonResult.facts_in_both" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="inspect_ai_scorers.fact_comparator.ComparisonResult.facts_only_in_answer">
+<span class="sig-name descname"><span class="pre">facts_only_in_answer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#inspect_ai_scorers.fact_comparator.ComparisonResult.facts_only_in_answer" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="inspect_ai_scorers.fact_comparator.ComparisonResult.facts_only_in_context">
+<span class="sig-name descname"><span class="pre">facts_only_in_context</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#inspect_ai_scorers.fact_comparator.ComparisonResult.facts_only_in_context" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="inspect_ai_scorers.fact_comparator.FactComparator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">inspect_ai_scorers.fact_comparator.</span></span><span class="sig-name descname"><span class="pre">FactComparator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inspect_ai_scorers/fact_comparator.html#FactComparator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inspect_ai_scorers.fact_comparator.FactComparator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class to compare facts between context and answer using an AI model.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="inspect_ai_scorers.fact_comparator.FactComparator.calculate_metrics">
+<span class="sig-name descname"><span class="pre">calculate_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comparison_result</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inspect_ai_scorers/fact_comparator.html#FactComparator.calculate_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inspect_ai_scorers.fact_comparator.FactComparator.calculate_metrics" title="Link to this definition"></a></dt>
+<dd><p>Calculate groundedness and thoroughness metrics based on the comparison results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>comparison_result</strong> (<a class="reference internal" href="#inspect_ai_scorers.fact_comparator.ComparisonResult" title="inspect_ai_scorers.fact_comparator.ComparisonResult"><em>ComparisonResult</em></a>) – The result of the fact comparison.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The calculated metrics.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="inspect_ai_scorers.fact_comparator.FactComparator.process_data">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context_text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">answer_text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inspect_ai_scorers/fact_comparator.html#FactComparator.process_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inspect_ai_scorers.fact_comparator.FactComparator.process_data" title="Link to this definition"></a></dt>
+<dd><p>Process the context and answer, parsing them into facts and comparing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context_text</strong> (<em>str</em>) – The context text.</p></li>
+<li><p><strong>answer_text</strong> (<em>str</em>) – The answer text.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The processed data and comparison results.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="inspect_ai_scorers.fact_comparator.FactComparatorScorer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">inspect_ai_scorers.fact_comparator.</span></span><span class="sig-name descname"><span class="pre">FactComparatorScorer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inspect_ai_scorers/fact_comparator.html#FactComparatorScorer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inspect_ai_scorers.fact_comparator.FactComparatorScorer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class to score facts based on their groundedness and thoroughness.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="inspect_ai_scorers.fact_comparator.ModelComparator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">inspect_ai_scorers.fact_comparator.</span></span><span class="sig-name descname"><span class="pre">ModelComparator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inspect_ai_scorers/fact_comparator.html#ModelComparator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inspect_ai_scorers.fact_comparator.ModelComparator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class to compare models based on their generated facts.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="inspect_ai_scorers.fact_comparator.ModelComparator.run_and_compare">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run_and_compare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context_text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">answer_text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inspect_ai_scorers/fact_comparator.html#ModelComparator.run_and_compare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inspect_ai_scorers.fact_comparator.ModelComparator.run_and_compare" title="Link to this definition"></a></dt>
+<dd><p>Run the model comparison and calculate the metrics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context_text</strong> (<em>str</em>) – The context text for comparison.</p></li>
+<li><p><strong>answer_text</strong> (<em>str</em>) – The answer text for comparison.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The comparison results and metrics.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-inspect_ai_scorers.prompt_evaluator">
+<span id="inspect-ai-scorers-prompt-evaluator-module"></span><h2>inspect_ai_scorers.prompt_evaluator module<a class="headerlink" href="#module-inspect_ai_scorers.prompt_evaluator" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="inspect_ai_scorers.prompt_evaluator.PromptEvaluator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">inspect_ai_scorers.prompt_evaluator.</span></span><span class="sig-name descname"><span class="pre">PromptEvaluator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inspect_ai_scorers/prompt_evaluator.html#PromptEvaluator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inspect_ai_scorers.prompt_evaluator.PromptEvaluator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class to evaluate prompts using an AI model.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="inspect_ai_scorers.prompt_evaluator.PromptEvaluator.process_data">
+<span class="sig-name descname"><span class="pre">process_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">final_result</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inspect_ai_scorers/prompt_evaluator.html#PromptEvaluator.process_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inspect_ai_scorers.prompt_evaluator.PromptEvaluator.process_data" title="Link to this definition"></a></dt>
+<dd><p>Process the final result and determine the pass value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>final_result</strong> (<em>str</em>) – The final result from the model.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The pass value (1 if “PASS” is in the result, 0 if “FAIL” is in the result, otherwise -1).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="inspect_ai_scorers.prompt_evaluator.PromptEvaluatorWrapper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">inspect_ai_scorers.prompt_evaluator.</span></span><span class="sig-name descname"><span class="pre">PromptEvaluatorWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inspect_ai_scorers/prompt_evaluator.html#PromptEvaluatorWrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inspect_ai_scorers.prompt_evaluator.PromptEvaluatorWrapper" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Scorer</span></code></p>
+<p>A wrapper class for the PromptEvaluator to integrate with the scoring system.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to Inspect AI Scorers’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Abigail Haddad.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

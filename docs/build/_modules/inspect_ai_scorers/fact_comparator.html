@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>inspect_ai_scorers.fact_comparator &mdash; Inspect AI Scorers 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=01f34227"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Inspect AI Scorers
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../inspect_ai_scorers.html">inspect_ai_scorers package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Inspect AI Scorers</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">inspect_ai_scorers.fact_comparator</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for inspect_ai_scorers.fact_comparator</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">inspect_ai.dataset</span> <span class="kn">import</span> <span class="n">Sample</span>
+<span class="kn">from</span> <span class="nn">inspect_ai.solver</span> <span class="kn">import</span> <span class="n">TaskState</span>
+<span class="kn">from</span> <span class="nn">inspect_ai.scorer</span> <span class="kn">import</span> <span class="n">Score</span><span class="p">,</span> <span class="n">Scorer</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">scorer</span>
+<span class="kn">from</span> <span class="nn">langchain.prompts</span> <span class="kn">import</span> <span class="n">PromptTemplate</span>
+<span class="kn">from</span> <span class="nn">langchain.output_parsers</span> <span class="kn">import</span> <span class="n">PydanticOutputParser</span>
+<span class="kn">from</span> <span class="nn">langchain_core.pydantic_v1</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span>
+<span class="kn">from</span> <span class="nn">langchain_core.messages</span> <span class="kn">import</span> <span class="n">HumanMessage</span>
+
+<span class="kn">from</span> <span class="nn">inspect_ai_scorers.code_from_inspect_ai</span> <span class="kn">import</span> <span class="n">InspectChatModel</span>
+
+<div class="viewcode-block" id="FactComparator">
+<a class="viewcode-back" href="../../inspect_ai_scorers.html#inspect_ai_scorers.fact_comparator.FactComparator">[docs]</a>
+<span class="k">class</span> <span class="nc">FactComparator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class to compare facts between context and answer using an AI model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the FactComparator with the provided model.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            model: The AI model used for generating and comparing facts.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parser</span> <span class="o">=</span> <span class="n">PydanticOutputParser</span><span class="p">(</span><span class="n">pydantic_object</span><span class="o">=</span><span class="n">ComparisonResult</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context_text</span><span class="p">,</span> <span class="n">answer_text</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process the context and answer asynchronously and return the comparison results.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            context_text (str): The context text.</span>
+<span class="sd">            answer_text (str): The answer text.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: The comparison results.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_data</span><span class="p">(</span><span class="n">context_text</span><span class="p">,</span> <span class="n">answer_text</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FactComparator.process_data">
+<a class="viewcode-back" href="../../inspect_ai_scorers.html#inspect_ai_scorers.fact_comparator.FactComparator.process_data">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">process_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context_text</span><span class="p">,</span> <span class="n">answer_text</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process the context and answer, parsing them into facts and comparing.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            context_text (str): The context text.</span>
+<span class="sd">            answer_text (str): The answer text.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: The processed data and comparison results.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">context_list</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_agenerate</span><span class="p">([</span><span class="n">HumanMessage</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_parse_prompt</span><span class="p">()</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">context_text</span><span class="p">))]))</span><span class="o">.</span><span class="n">generations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span>
+        <span class="n">answer_list</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_agenerate</span><span class="p">([</span><span class="n">HumanMessage</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_parse_prompt</span><span class="p">()</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">answer_text</span><span class="p">))]))</span><span class="o">.</span><span class="n">generations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span>
+        <span class="n">comparison_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">((</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_agenerate</span><span class="p">([</span><span class="n">HumanMessage</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_compare_prompt</span><span class="p">()</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">context_list</span><span class="o">=</span><span class="n">context_list</span><span class="p">,</span> <span class="n">answer_list</span><span class="o">=</span><span class="n">answer_list</span><span class="p">))]))</span><span class="o">.</span><span class="n">generations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;context_list&quot;</span><span class="p">:</span> <span class="n">context_list</span><span class="p">,</span>
+            <span class="s2">&quot;answer_list&quot;</span><span class="p">:</span> <span class="n">answer_list</span><span class="p">,</span>
+            <span class="s2">&quot;comparison_result&quot;</span><span class="p">:</span> <span class="n">comparison_result</span><span class="p">,</span>
+        <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="FactComparator.calculate_metrics">
+<a class="viewcode-back" href="../../inspect_ai_scorers.html#inspect_ai_scorers.fact_comparator.FactComparator.calculate_metrics">[docs]</a>
+    <span class="k">def</span> <span class="nf">calculate_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comparison_result</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate groundedness and thoroughness metrics based on the comparison results.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            comparison_result (ComparisonResult): The result of the fact comparison.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: The calculated metrics.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">facts_in_both_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">comparison_result</span><span class="o">.</span><span class="n">facts_in_both</span><span class="p">)</span>
+        <span class="n">facts_only_in_answer_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">comparison_result</span><span class="o">.</span><span class="n">facts_only_in_answer</span><span class="p">)</span>
+        <span class="n">facts_only_in_context_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">comparison_result</span><span class="o">.</span><span class="n">facts_only_in_context</span><span class="p">)</span>
+
+        <span class="n">total_answer_facts</span> <span class="o">=</span> <span class="n">facts_in_both_count</span> <span class="o">+</span> <span class="n">facts_only_in_answer_count</span>
+        <span class="n">total_context_facts</span> <span class="o">=</span> <span class="n">facts_in_both_count</span> <span class="o">+</span> <span class="n">facts_only_in_context_count</span>
+
+        <span class="c1"># Groundedness is the proportion of facts in the answer that are also in the context</span>
+        <span class="n">groundedness</span> <span class="o">=</span> <span class="p">(</span><span class="n">facts_in_both_count</span> <span class="o">/</span> <span class="n">total_answer_facts</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span> <span class="k">if</span> <span class="n">total_answer_facts</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+
+        <span class="c1"># Thoroughness is the proportion of facts in the context that are also in the answer</span>
+        <span class="n">thoroughness</span> <span class="o">=</span> <span class="p">(</span><span class="n">facts_in_both_count</span> <span class="o">/</span> <span class="n">total_context_facts</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span> <span class="k">if</span> <span class="n">total_context_facts</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;groundedness&quot;</span><span class="p">:</span> <span class="n">groundedness</span><span class="p">,</span>
+            <span class="s2">&quot;thoroughness&quot;</span><span class="p">:</span> <span class="n">thoroughness</span><span class="p">,</span>
+        <span class="p">}</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_prompt</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate the prompt template for parsing facts from text.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            PromptTemplate: The prompt template.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">PromptTemplate</span><span class="p">(</span>
+            <span class="n">input_variables</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span>
+            <span class="n">template</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            Here is a text that may contain one or more facts:</span>
+
+<span class="s2">            &lt;text&gt;</span>
+<span class="s2">            </span><span class="si">{text}</span>
+<span class="s2">            &lt;/text&gt;</span>
+
+<span class="s2">            Please parse this text into a list of individual facts. If a sentence contains multiple facts, break it up into separate sentences as needed so that each sentence contains only one fact.</span>
+
+<span class="s2">            If any of the facts contain pronouns and the pronoun reference is clear, replace the pronoun with the noun it refers to. If the pronoun reference is ambiguous, leave the pronoun as is.</span>
+
+<span class="s2">            Return the final list of parsed and pronoun-replaced facts inside &lt;facts&gt; tags, with each fact on its own line. Do not include any additional commentary or explanation, including about pronoun changes, number of facts, or truth value of the facts.</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_compare_prompt</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate the prompt template for comparing facts between context and answer.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            PromptTemplate: The prompt template.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">PromptTemplate</span><span class="p">(</span>
+            <span class="n">input_variables</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;context_list&quot;</span><span class="p">,</span> <span class="s2">&quot;answer_list&quot;</span><span class="p">],</span>
+            <span class="n">template</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            You will be comparing facts between a context and an answer to determine which facts are shared and which are unique to each.</span>
+
+<span class="s2">            Here is the context:</span>
+
+<span class="s2">            &lt;context&gt;</span>
+<span class="s2">            </span><span class="si">{context_list}</span>
+<span class="s2">            &lt;/context&gt;</span>
+
+<span class="s2">            And here is the answer: </span>
+
+<span class="s2">            &lt;answer&gt;</span>
+<span class="s2">            </span><span class="si">{answer_list}</span>
+<span class="s2">            &lt;/answer&gt;</span>
+
+<span class="s2">            Carefully analyze the facts presented in the context and answer, focusing on the semantic meaning rather than the exact wording.</span>
+
+<span class="s2">            Then, output a dictionary with the following keys and corresponding lists of facts as values:</span>
+
+<span class="s2">            1. &quot;facts_in_both&quot;: A list of facts that are present in both the context and the answer</span>
+
+<span class="s2">            2. &quot;facts_only_in_answer&quot;: A list of facts that are only present in the answer </span>
+
+<span class="s2">            3. &quot;facts_only_in_context&quot;: A list of facts that are only present in the context</span>
+
+<span class="s2">            Remember, the facts do not need to be worded identically to be considered the same. Focus on whether the core meaning is shared or unique.  A fact in the context may be expressed in different terms in the answer, or multiple facts in one may combine to express a single fact in the other.</span>
+
+<span class="s2">            Provide your results in this format:</span>
+
+<span class="s2">            {{</span>
+<span class="s2">                &quot;facts_in_both&quot;: [</span>
+<span class="s2">                    &quot;Fact 1 present in both&quot;,</span>
+<span class="s2">                    &quot;Fact 2 present in both&quot;</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;facts_only_in_answer&quot;: [</span>
+<span class="s2">                    &quot;Fact 1 only in answer&quot;,</span>
+<span class="s2">                    &quot;Fact 2 only in answer&quot;  </span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;facts_only_in_context&quot;: [</span>
+<span class="s2">                    &quot;Fact 1 only in context&quot;,</span>
+<span class="s2">                    &quot;Fact 2 only in context&quot;</span>
+<span class="s2">                ]</span>
+<span class="s2">            }}</span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ComparisonResult">
+<a class="viewcode-back" href="../../inspect_ai_scorers.html#inspect_ai_scorers.fact_comparator.ComparisonResult">[docs]</a>
+<span class="k">class</span> <span class="nc">ComparisonResult</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A Pydantic model for representing the comparison result.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">facts_in_both</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;List of facts present in both context and answer&quot;</span><span class="p">)</span>
+    <span class="n">facts_only_in_answer</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;List of facts only present in the answer&quot;</span><span class="p">)</span>
+    <span class="n">facts_only_in_context</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;List of facts only present in the context&quot;</span><span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="ModelComparator">
+<a class="viewcode-back" href="../../inspect_ai_scorers.html#inspect_ai_scorers.fact_comparator.ModelComparator">[docs]</a>
+<span class="k">class</span> <span class="nc">ModelComparator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class to compare models based on their generated facts.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the ModelComparator with the provided model.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            model: The AI model used for generating and comparing facts.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inspect_model</span> <span class="o">=</span> <span class="n">InspectChatModel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comparator</span> <span class="o">=</span> <span class="n">FactComparator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inspect_model</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ModelComparator.run_and_compare">
+<a class="viewcode-back" href="../../inspect_ai_scorers.html#inspect_ai_scorers.fact_comparator.ModelComparator.run_and_compare">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">run_and_compare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context_text</span><span class="p">,</span> <span class="n">answer_text</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run the model comparison and calculate the metrics.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            context_text (str): The context text for comparison.</span>
+<span class="sd">            answer_text (str): The answer text for comparison.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: The comparison results and metrics.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">comparator</span><span class="p">(</span><span class="n">context_text</span><span class="p">,</span> <span class="n">answer_text</span><span class="p">)</span>
+            <span class="n">metrics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comparator</span><span class="o">.</span><span class="n">calculate_metrics</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;comparison_result&quot;</span><span class="p">])</span>
+            <span class="n">groundedness_model</span> <span class="o">=</span> <span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;groundedness&#39;</span><span class="p">]</span>
+            <span class="n">thoroughness_model</span> <span class="o">=</span> <span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;thoroughness&#39;</span><span class="p">]</span>
+            <span class="n">context_list</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;context_list&quot;</span><span class="p">]</span>
+            <span class="n">answer_list</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;answer_list&quot;</span><span class="p">]</span>
+            <span class="n">comparison_result</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;comparison_result&quot;</span><span class="p">]</span>
+            <span class="n">model_error</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">groundedness_model</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">thoroughness_model</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">context_list</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">answer_list</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">comparison_result</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">model_error</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;Groundedness (Model)&#39;</span><span class="p">:</span> <span class="n">groundedness_model</span><span class="p">,</span>
+            <span class="s1">&#39;Thoroughness (Model)&#39;</span><span class="p">:</span> <span class="n">thoroughness_model</span><span class="p">,</span>
+            <span class="s1">&#39;Context List&#39;</span><span class="p">:</span> <span class="n">context_list</span><span class="p">,</span>
+            <span class="s1">&#39;Answer List&#39;</span><span class="p">:</span> <span class="n">answer_list</span><span class="p">,</span>
+            <span class="s1">&#39;Facts in Both&#39;</span><span class="p">:</span> <span class="n">comparison_result</span><span class="o">.</span><span class="n">facts_in_both</span> <span class="k">if</span> <span class="n">comparison_result</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s1">&#39;Facts Only in Answer&#39;</span><span class="p">:</span> <span class="n">comparison_result</span><span class="o">.</span><span class="n">facts_only_in_answer</span> <span class="k">if</span> <span class="n">comparison_result</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s1">&#39;Facts Only in Context&#39;</span><span class="p">:</span> <span class="n">comparison_result</span><span class="o">.</span><span class="n">facts_only_in_context</span> <span class="k">if</span> <span class="n">comparison_result</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s1">&#39;Model Error&#39;</span><span class="p">:</span> <span class="n">model_error</span>
+        <span class="p">}</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="FactComparatorScorer">
+<a class="viewcode-back" href="../../inspect_ai_scorers.html#inspect_ai_scorers.fact_comparator.FactComparatorScorer">[docs]</a>
+<span class="k">class</span> <span class="nc">FactComparatorScorer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class to score facts based on their groundedness and thoroughness.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the FactComparatorScorer with the provided model.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            model: The AI model used for generating and comparing facts.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fact_comparator</span> <span class="o">=</span> <span class="n">FactComparator</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">TaskState</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Sample</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process the state and target to calculate the score.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            state (TaskState): The current task state.</span>
+<span class="sd">            target (Sample): The target sample.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Score: The calculated score.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">context_text</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">context_text</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">input</span>
+        <span class="n">answer_text</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">target</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">fact_comparator</span><span class="o">.</span><span class="n">process_data</span><span class="p">(</span><span class="n">context_text</span><span class="p">,</span> <span class="n">answer_text</span><span class="p">)</span>
+        <span class="n">metrics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fact_comparator</span><span class="o">.</span><span class="n">calculate_metrics</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;comparison_result&quot;</span><span class="p">])</span>
+
+        <span class="n">scorer_value</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;groundedness&quot;</span><span class="p">:</span> <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;groundedness&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;thoroughness&quot;</span><span class="p">:</span> <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;thoroughness&quot;</span><span class="p">],</span>
+        <span class="p">}</span>
+
+        <span class="n">explanation</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Model Output: </span><span class="si">{</span><span class="n">context_text</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">return</span> <span class="n">Score</span><span class="p">(</span>
+            <span class="n">value</span><span class="o">=</span><span class="n">scorer_value</span><span class="p">,</span>
+            <span class="n">explanation</span><span class="o">=</span><span class="n">explanation</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+
+<span class="nd">@metric</span>
+<span class="k">def</span> <span class="nf">thoroughness</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Metric function to calculate the thoroughness score.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        function: The metric function.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">metric</span><span class="p">(</span><span class="n">scores</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Score</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">scores</span><span class="p">:</span>
+            <span class="n">metadata</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">metadata</span>
+            <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">total</span> <span class="o">+=</span> <span class="nb">float</span><span class="p">(</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;thoroughness&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">total</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">scores</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">metric</span>
+
+
+<span class="nd">@metric</span>
+<span class="k">def</span> <span class="nf">groundedness</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Metric function to calculate the groundedness score.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        function: The metric function.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">metric</span><span class="p">(</span><span class="n">scores</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Score</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">scores</span><span class="p">:</span>
+            <span class="n">metadata</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">metadata</span>
+            <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">total</span> <span class="o">+=</span> <span class="nb">float</span><span class="p">(</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;groundedness&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">total</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">scores</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">metric</span>
+
+
+<span class="nd">@scorer</span><span class="p">(</span><span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">groundedness</span><span class="p">(),</span> <span class="n">thoroughness</span><span class="p">()])</span>
+<span class="k">def</span> <span class="nf">fact_comparator_scorer</span><span class="p">(</span><span class="n">model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Scorer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a scorer for the fact comparator.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        model: The AI model used for generating and comparing facts.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Scorer: The fact comparator scorer.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">TaskState</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Target</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Score</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">InspectChatModel</span><span class="p">()</span>
+        <span class="n">fact_comparator_scorer</span> <span class="o">=</span> <span class="n">FactComparatorScorer</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+        <span class="n">score</span> <span class="o">=</span> <span class="k">await</span> <span class="n">fact_comparator_scorer</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+
+        <span class="n">grounded_score</span> <span class="o">=</span> <span class="n">score</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;groundedness&#39;</span><span class="p">]</span>
+        <span class="n">thorough_score</span> <span class="o">=</span> <span class="n">score</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;thoroughness&#39;</span><span class="p">]</span>
+        <span class="n">explanation</span> <span class="o">=</span> <span class="n">score</span><span class="o">.</span><span class="n">explanation</span>
+
+        <span class="n">answer</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">completion</span>
+
+        <span class="k">return</span> <span class="n">Score</span><span class="p">(</span>
+            <span class="n">value</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;G:</span><span class="si">{</span><span class="n">grounded_score</span><span class="si">}</span><span class="s2"> : T:</span><span class="si">{</span><span class="n">thorough_score</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">answer</span><span class="o">=</span><span class="n">answer</span><span class="p">,</span>
+            <span class="n">explanation</span><span class="o">=</span><span class="s2">&quot;nothing&quot;</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;thoroughness&quot;</span><span class="p">:</span> <span class="n">thorough_score</span><span class="p">,</span>
+                <span class="s2">&quot;groundedness&quot;</span><span class="p">:</span> <span class="n">grounded_score</span><span class="p">,</span>
+                <span class="s2">&quot;stuff&quot;</span><span class="p">:</span> <span class="n">explanation</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">score</span>
+
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Abigail Haddad.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
