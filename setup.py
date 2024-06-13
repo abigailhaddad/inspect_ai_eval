@@ -27,6 +27,7 @@ setup(
     exclude_package_data={
         '': ['__pycache__'],
     },
+    include_package_data=True,
     install_requires=parse_requirements('requirements.txt'),
     classifiers=[
         'Development Status :: 4 - Beta',
