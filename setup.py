@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_namespace_packages
 
 # Function to parse requirements.txt
 def parse_requirements(filename):
@@ -18,13 +18,15 @@ setup(
     author_email='abigail.haddad@gmail.com',
     url='https://github.com/abigailhaddad/inspect_ai_eval',
     license='MIT',
-    packages=['inspect_ai_scorers', 'tests', 'examples'],
-    include_package_data=True,
+    packages=find_namespace_packages(include=['inspect_ai_scorers', 'tests', 'examples']),
     package_data={
-    'inspect_ai_scorers': ['logs/*'],
-    'tests': ['logs/*'],
-    'examples': ['*'],
-},
+        'inspect_ai_scorers': ['logs/*.json'],
+        'tests': ['logs/*.json'],
+        'examples': ['*'],
+    },
+    exclude_package_data={
+        '': ['__pycache__'],
+    },
     install_requires=parse_requirements('requirements.txt'),
     classifiers=[
         'Development Status :: 4 - Beta',
