@@ -1,3 +1,14 @@
+[tool.poetry]
+name = "inspect-ai-scorers"
+version = "0.1.7"
+description = ""
+authors = ["abigailhaddad <abigail.haddad@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
