@@ -1,5 +1,3 @@
-Looks good! Here's the updated README.md with some light copyediting and links:
-
 # Inspect AI Custom Scorers
 
 This repository contains custom scorers designed to work with the [Inspect AI](https://github.com/UKGovernmentBEIS/inspect_ai/) framework, which is a Python repository for evaluating the performance of language models on various tasks.

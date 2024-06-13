@@ -10,4 +10,5 @@
 *.pyc
 *.pyo
 **/__pycache__/
-*.log
+*.logs
+/poetryenv/
