@@ -12,15 +12,19 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from inspect_ai_scorers.prompt_evaluator import prompt_scorer
+from inspect_ai_scorers.code_from_inspect_ai import InspectChatModel
 
 @task
-def prompt_evaluator_eval():
+def prompt_evaluator_eval(model):
     """
     Create a classification evaluation task.
 
     This function creates a task for evaluating a language model's ability to answer a specific question.
     The task includes a single sample with an input question and a target condition for determining whether
     the model's answer is correct.
+
+    Args:
+        model: The AI model used for the evaluation task.
 
     Returns:
         Task: The classification evaluation task.
@@ -40,7 +44,7 @@ def prompt_evaluator_eval():
             system_message(SYSTEM_MESSAGE),
             generate()
         ],
-        scorer=prompt_scorer(model=get_model()),
+        scorer=prompt_scorer(model),
     )
 
 class TestPromptEvaluator(unittest.TestCase):
@@ -52,10 +56,11 @@ class TestPromptEvaluator(unittest.TestCase):
     """
 
     def setUp(self):
-        self.model = 'openai/gpt-4'
-        os.environ['INSPECT_EVAL_MODEL'] = self.model
-        os.environ['INSPECT_MODEL_NAME'] = self.model
+        self.model_name = 'openai/gpt-4'
+        os.environ['INSPECT_EVAL_MODEL'] = self.model_name
+        os.environ['INSPECT_MODEL_NAME'] = self.model_name
         os.environ['PYTHONIOENCODING'] = 'utf-8'
+        self.model = InspectChatModel()
 
     def test_prompt_evaluator_eval_task(self):
         """
@@ -65,11 +70,11 @@ class TestPromptEvaluator(unittest.TestCase):
         the structure of the evaluation results returned by running the task.
         """
         try:
-            task = prompt_evaluator_eval()
+            task = prompt_evaluator_eval(self.model)
             self.assertIsInstance(task, Task)
 
             # Run the evaluation
-            eval_results = eval(task, model=self.model)
+            eval_results = eval(task, model=self.model_name)
             self.assertIsInstance(eval_results, EvalLogs)
 
             # Check the first item in the results list

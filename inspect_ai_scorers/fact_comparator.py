@@ -8,6 +8,8 @@ from langchain_core.messages import HumanMessage
 
 from inspect_ai_scorers.code_from_inspect_ai import InspectChatModel
 
+import json
+
 class FactComparator:
     """
     A class to compare facts between context and answer using an AI model.
@@ -246,7 +248,7 @@ class FactComparatorScorer:
         self.model = model
         self.fact_comparator = FactComparator(model)
 
-    async def __call__(self, state: TaskState, target: Sample):
+    async def __call__(self, state: TaskState, target: Target):
         """
         Process the state and target to calculate the score.
 
@@ -257,22 +259,31 @@ class FactComparatorScorer:
         Returns:
             Score: The calculated score.
         """
-        try:
-            context_text = state.output.choices[0].message.content
-        except:
-            context_text = state.input
-        answer_text = target.target
+        context_text = state.output.choices[0].message.content
+        answer_text = target.text
 
         result = await self.fact_comparator.process_data(context_text, answer_text)
+
+        comparison = result["comparison_result"]
+
+        explanation = "\n".join([
+            "**Facts in Both**",
+            "\n".join(comparison.facts_in_both),
+            "",
+            "**Facts Only In Answer**",
+            "\n".join(comparison.facts_only_in_answer),
+            "",
+            "**Facts Only In Context**",
+            "\n".join(comparison.facts_only_in_context),
+        ])
+        
+
         metrics = self.fact_comparator.calculate_metrics(result["comparison_result"])
 
         scorer_value = {
             "groundedness": metrics["groundedness"],
             "thoroughness": metrics["thoroughness"],
         }
-
-        explanation = str(result) + f"\nModel Output: {context_text}"
-
         return Score(
             value=scorer_value,
             explanation=explanation,
@@ -290,9 +301,8 @@ def thoroughness():
     def metric(scores: list[Score]) -> float:
         total = 0.0
         for item in scores:
-            metadata = item.metadata
-            if metadata is not None:
-                total += float(metadata["thoroughness"])
+            if isinstance(item.value, dict):
+                total += float(item.value["thoroughness"])
         return total / float(len(scores))
     return metric
 
@@ -308,15 +318,14 @@ def groundedness():
     def metric(scores: list[Score]) -> float:
         total = 0.0
         for item in scores:
-            metadata = item.metadata
-            if metadata is not None:
-                total += float(metadata["groundedness"])
+            if isinstance(item.value, dict):
+                total += float(item.value["groundedness"])
         return total / float(len(scores))
     return metric
 
 
 @scorer(metrics=[groundedness(), thoroughness()])
-def fact_comparator_scorer(model) -> Scorer:
+def fact_comparator_scorer() -> Scorer:
     """
     Create a scorer for the fact comparator.
 
@@ -331,25 +340,15 @@ def fact_comparator_scorer(model) -> Scorer:
         fact_comparator_scorer = FactComparatorScorer(model)
 
         score = await fact_comparator_scorer(state, target)
-
-        grounded_score = score.value['groundedness']
-        thorough_score = score.value['thoroughness']
         explanation = score.explanation
-
+        
         answer = state.output.completion
 
         return Score(
-            value=f"G:{grounded_score} : T:{thorough_score}",
+            value=score.value,
             answer=answer,
-            explanation="nothing",
-            metadata={
-                "thoroughness": thorough_score,
-                "groundedness": grounded_score,
-                "stuff": explanation
-            }
+            explanation=explanation,
+            metadata=score.metadata
         )
 
     return score
-
-
-

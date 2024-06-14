@@ -29,7 +29,7 @@ class TestFactComparatorEvaluation(unittest.TestCase):
 
     def test_fact_comparator_eval_task(self):
         try:
-            task = fact_comparator_eval(self.model)
+            task = fact_comparator_eval()
             self.assertIsInstance(task, Task)
 
             self.assertTrue(hasattr(task, 'scorer'))
@@ -101,7 +101,7 @@ def sample_data():
     return samples
 
 @task
-def fact_comparator_eval(model_name):
+def fact_comparator_eval():
     """
     Create an evaluation task for the fact comparator.
 
@@ -116,7 +116,7 @@ def fact_comparator_eval(model_name):
             system_message(SYSTEM_MESSAGE),
             generate()
         ],
-        scorer=fact_comparator_scorer(model=get_model(model_name)),
+        scorer=fact_comparator_scorer(),
     )
 
 if __name__ == '__main__':
