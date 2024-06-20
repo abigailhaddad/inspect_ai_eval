@@ -18,7 +18,40 @@ Preliminary unit tests for the `FactComparator` and `PromptEvaluator` classes ar
 
 ## Examples
 
-Examples of usage for the `FactComparator` and `PromptEvaluator` classes are provided in the [`examples` directory](examples/). Here, the `input` field is used for the text which is then evaluated by the scorer directly. These can be seen as tests of the scorers in conjunction with whatever evaluation models you use: for each example, there is a label for what the response should be, and if you run them, you'll see how well the model performs.
+The [`examples` directory](examples/) contains demonstrations of how to use the custom scorers in different scenarios. There are two main types of examples:
+
+### Scorer-Only Examples
+
+These examples demonstrate the use of the scorers directly on pre-defined inputs and targets, without involving a language model for generating responses. They are useful for testing the scorers themselves and understanding how they evaluate different types of inputs.
+
+1. **Fact Comparator Examples** ([`fact_comparator_examples.py`](examples/fact_comparator_examples.py)):
+   This script demonstrates the use of the `FactComparator` scorer on a variety of pre-defined input-target pairs. It shows how the scorer evaluates groundedness and thoroughness for different scenarios, such as partial fact overlap, restructured information, and incorrect information.
+
+2. **Prompt Evaluator Examples** ([`prompt_evaluator_examples.py`](examples/prompt_evaluator_examples.py)):
+   This script showcases the `PromptEvaluator` scorer, demonstrating how it evaluates inputs based on specific criteria defined in the target text. It includes examples of both PASS and FAIL scenarios for various types of questions and conditions.
+
+To run these examples, use:
+```
+python examples/fact_comparator_examples.py --model <model_name>
+python examples/prompt_evaluator_examples.py --model <model_name>
+```
+Replace `<model_name>` with the desired model for evaluation (e.g., 'openai/gpt-4').
+
+### Full Task Examples
+
+The full task examples demonstrate how to use the scorers as part of a complete evaluation pipeline, where a language model generates responses to questions, and these responses are then evaluated using our custom scorers.
+
+**Full Task Example** ([`full_task_examples.py`](examples/full_task_examples.py)):
+This script shows how to set up and run a complete evaluation task using both the `FactComparator` and `PromptEvaluator` scorers. It demonstrates:
+- How to define evaluation tasks using the `@task` decorator
+- How to specify different models for querying (generating responses) and evaluation (scoring the responses)
+- How to run the evaluation
+
+To run the full task example, use:
+```
+python examples/full_task_examples.py --eval_model <eval_model_name> --query_model <query_model_name>
+```
+Replace `<eval_model_name>` with the model you want to use for evaluation (e.g., 'openai/gpt-3.5-turbo') and `<query_model_name>` with the model you want to use for generating responses (e.g., 'openai/gpt-4').
 
 ## License
 
