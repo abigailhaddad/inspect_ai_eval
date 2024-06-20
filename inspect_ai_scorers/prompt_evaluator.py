@@ -7,13 +7,6 @@ from inspect_ai.dataset import Sample
 
 from inspect_ai_scorers.code_from_inspect_ai import InspectChatModel
 
-from langchain.prompts import PromptTemplate
-from langchain_core.messages import HumanMessage
-from inspect_ai.solver import TaskState
-from inspect_ai.scorer import Score, Scorer, metric, scorer
-from inspect_ai.dataset import Sample
-from inspect_ai_scorers.code_from_inspect_ai import InspectChatModel
-
 class PromptEvaluator:
     """
     A class to evaluate prompts using an AI model.
@@ -87,8 +80,8 @@ class PromptEvaluatorWrapper(Scorer):
         Args:
             model: The AI model used for evaluating prompts.
         """
-        self.model = model
-        self.prompt_scorer = PromptEvaluator(model)
+        self.model = InspectChatModel()
+        self.prompt_scorer = PromptEvaluator(self.model)
 
     async def __call__(self, state: TaskState, target: Sample):
         """
@@ -111,7 +104,6 @@ class PromptEvaluatorWrapper(Scorer):
             answer=state.output.completion,
             metadata={"pass": pass_value}
         )
-
 
 @metric
 def pass_metric():
