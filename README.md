@@ -64,3 +64,9 @@ To use these scorers, install the `inspect-ai-scorers` package from Test PyPI:
 ```
 pip install --index-url https://test.pypi.org/simple/ inspect-ai-scorers
 ```
+
+To use the tests or examples, clone the repo:
+
+```
+git clone https://github.com/abigailhaddad/inspect_ai_eval
+```
