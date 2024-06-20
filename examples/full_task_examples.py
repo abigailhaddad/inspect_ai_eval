@@ -1,45 +1,14 @@
-import os
-import sys
+import asyncio
 import argparse
 from inspect_ai import Task, task, eval
 from inspect_ai.dataset import Sample
-from inspect_ai.log._log import EvalLog, EvalResults, EvalSample
-from inspect_ai.scorer._metric import Score
-from inspect_ai._eval.eval import EvalLogs
 from inspect_ai.solver import generate, system_message
-from inspect_ai.model import get_model
-from inspect_ai_scorers.code_from_inspect_ai import InspectChatModel
+from inspect_ai.model import get_model, GenerateConfig, Model
 from inspect_ai_scorers.prompt_evaluator import prompt_scorer
 from inspect_ai_scorers.fact_comparator import fact_comparator_scorer
 
 @task
-def prompt_evaluator_eval(query_model):
-    """
-    Create an evaluation task for the PromptEvaluator.
-    """
-    samples = [
-        Sample(
-            input="How old is the sun?",
-            target="Return PASS if the answer contains that the sun is 4.6 billion years old, return FAIL otherwise.",
-            description="Very basic question.",
-            id="case1"
-        )
-    ]
-    SYSTEM_MESSAGE = "Please answer the question being asked."
-    return Task(
-        dataset=samples,
-        plan=[
-            system_message(SYSTEM_MESSAGE),
-            generate(),
-        ],
-        scorer=prompt_scorer(query_model),
-    )
-
-@task
-def fact_comparator_eval(query_model):
-    """
-    Create an evaluation task for the fact comparator.
-    """
+def fact_comparator_eval(query_model, eval_model):
     samples = [
         Sample(
             input="How old is the sun?",
@@ -55,7 +24,8 @@ def fact_comparator_eval(query_model):
             system_message(SYSTEM_MESSAGE),
             generate(),
         ],
-        scorer=fact_comparator_scorer(query_model),
+        scorer=fact_comparator_scorer(eval_model),
+        config=GenerateConfig(model=query_model),
     )
 
 if __name__ == "__main__":
@@ -67,20 +37,14 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Set up the query model (the model being evaluated)
-    os.environ['INSPECT_EVAL_MODEL'] = args.query_model
-    os.environ['INSPECT_MODEL_NAME'] = args.query_model
-    query_model = InspectChatModel()
-
-    # The eval_model is used directly in the eval() function
-    eval_model = args.eval_model
+    query_model = get_model(args.query_model)
     
-    print(f"Using evaluation model: {eval_model}")
+    # Set up the evaluation model
+    eval_model = get_model(args.eval_model)
+    
+    print(f"Using evaluation model: {args.eval_model}")
     print(f"Using query model: {args.query_model}")
     
-    print("\nRunning prompt_evaluator_eval:")
-    prompt_eval_results = eval(prompt_evaluator_eval(query_model), model=eval_model)
-    print(prompt_eval_results)
-    
     print("\nRunning fact_comparator_eval:")
-    fact_eval_results = eval(fact_comparator_eval(query_model), model=eval_model)
+    fact_eval_results = eval(fact_comparator_eval(query_model, eval_model), model=query_model)
     print(fact_eval_results)
