@@ -8,6 +8,27 @@ from inspect_ai_scorers.prompt_evaluator import prompt_scorer
 from inspect_ai_scorers.fact_comparator import fact_comparator_scorer
 
 @task
+def prompt_evaluator_eval(query_model, eval_model):
+    samples = [
+        Sample(
+            input="How old is the sun?",
+            target="Return PASS if the answer contains that the sun is 4.6 billion years old, return FAIL otherwise.",
+            description="Very basic question.",
+            id="case1"
+        )
+    ]
+    SYSTEM_MESSAGE = "Please answer the question being asked."
+    return Task(
+        dataset=samples,
+        plan=[
+            system_message(SYSTEM_MESSAGE),
+            generate(),
+        ],
+        scorer=prompt_scorer(eval_model),
+        config=GenerateConfig(model=query_model),
+    )
+
+@task
 def fact_comparator_eval(query_model, eval_model):
     samples = [
         Sample(
@@ -45,6 +66,10 @@ if __name__ == "__main__":
     print(f"Using evaluation model: {args.eval_model}")
     print(f"Using query model: {args.query_model}")
     
+    print("\nRunning prompt_evaluator_eval:")
+    prompt_eval_results = eval(prompt_evaluator_eval(query_model, eval_model), model=query_model)
+    print(prompt_eval_results)
+
     print("\nRunning fact_comparator_eval:")
     fact_eval_results = eval(fact_comparator_eval(query_model, eval_model), model=query_model)
     print(fact_eval_results)
