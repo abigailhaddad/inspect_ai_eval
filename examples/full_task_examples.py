@@ -13,15 +13,9 @@ from inspect_ai_scorers.prompt_evaluator import prompt_scorer
 from inspect_ai_scorers.fact_comparator import fact_comparator_scorer
 
 @task
-def prompt_evaluator_eval(eval_model):
+def prompt_evaluator_eval(query_model):
     """
     Create an evaluation task for the PromptEvaluator.
-     
-    Args:
-        eval_model: The AI model used for the evaluation task.
-     
-    Returns:
-        Task: The evaluation task.
     """
     samples = [
         Sample(
@@ -38,19 +32,13 @@ def prompt_evaluator_eval(eval_model):
             system_message(SYSTEM_MESSAGE),
             generate(),
         ],
-        scorer=prompt_scorer(eval_model),
+        scorer=prompt_scorer(query_model),
     )
 
 @task
-def fact_comparator_eval(eval_model):
+def fact_comparator_eval(query_model):
     """
     Create an evaluation task for the fact comparator.
-     
-    Args:
-        eval_model: The AI model used for the evaluation task.
-     
-    Returns:
-        Task: The evaluation task.
     """
     samples = [
         Sample(
@@ -67,7 +55,7 @@ def fact_comparator_eval(eval_model):
             system_message(SYSTEM_MESSAGE),
             generate(),
         ],
-        scorer=fact_comparator_scorer(eval_model),
+        scorer=fact_comparator_scorer(query_model),
     )
 
 if __name__ == "__main__":
@@ -78,17 +66,21 @@ if __name__ == "__main__":
                         help="Model to use for querying (default: openai/gpt-3.5-turbo)")
     args = parser.parse_args()
 
-    os.environ['INSPECT_EVAL_MODEL'] = args.eval_model
-    eval_model = InspectChatModel()
-    query_model = args.query_model
+    # Set up the query model (the model being evaluated)
+    os.environ['INSPECT_EVAL_MODEL'] = args.query_model
+    os.environ['INSPECT_MODEL_NAME'] = args.query_model
+    query_model = InspectChatModel()
+
+    # The eval_model is used directly in the eval() function
+    eval_model = args.eval_model
     
-    print(f"Using evaluation model: {args.eval_model}")
+    print(f"Using evaluation model: {eval_model}")
     print(f"Using query model: {args.query_model}")
     
     print("\nRunning prompt_evaluator_eval:")
-    prompt_eval_results = eval(prompt_evaluator_eval(eval_model), model=query_model)
+    prompt_eval_results = eval(prompt_evaluator_eval(query_model), model=eval_model)
     print(prompt_eval_results)
     
     print("\nRunning fact_comparator_eval:")
-    fact_eval_results = eval(fact_comparator_eval(eval_model), model=query_model)
+    fact_eval_results = eval(fact_comparator_eval(query_model), model=eval_model)
     print(fact_eval_results)
