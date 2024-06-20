@@ -4,6 +4,7 @@
 /tests/logs/
 /examples/logs/
 /devenv/
+/myenv/
 /build/
 /dist/
 *.egg-info/
