@@ -21,12 +21,9 @@ from inspect_ai.model import (
     GenerateConfig,
     ModelName,
     ModelOutput,
-    ToolCall,
-    ToolChoice,
-    ToolInfo,
-    ToolParam,
     get_model,
 )
+from inspect_ai.tool import ToolCall, ToolChoice, ToolInfo, ToolParam
 from inspect_ai.solver import Generate, Solver, TaskState
 
 @runtime_checkable
