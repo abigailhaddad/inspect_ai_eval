@@ -21,7 +21,7 @@ h11==0.14.0
 httpcore==1.0.5
 httpx==0.27.0
 idna==3.7
-inspect-ai>=0.3.14
+inspect-ai==0.3.17
 jmespath==1.0.1
 json-stream==2.3.2
 json-stream-rs-tokenizer==0.4.26
