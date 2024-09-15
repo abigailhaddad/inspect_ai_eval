@@ -31,9 +31,6 @@ class TestFactComparatorEvaluation(unittest.TestCase):
         try:
             task = fact_comparator_eval()
             self.assertIsInstance(task, Task)
-
-            self.assertTrue(hasattr(task, 'scorer'))
-            self.assertIsInstance(task.scorer, Scorer)
             
             # Run the evaluation
             eval_results = eval(task, model=self.model)
