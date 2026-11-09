@@ -259,8 +259,12 @@ class FactComparatorScorer:
         Returns:
             Score: The calculated score.
         """
-        context_text = state.output.choices[0].message.content
-        answer_text = target.text
+        # Same roles as the examples and README: the target is the reference
+        # ("context"), the model's output is the "answer" being judged.
+        # groundedness = share of the output's facts found in the target;
+        # thoroughness = share of the target's facts found in the output.
+        context_text = target.text
+        answer_text = state.output.choices[0].message.content
 
         result = await self.fact_comparator.process_data(context_text, answer_text)
 
